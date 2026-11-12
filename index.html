@@ -26,8 +26,8 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;p
 </head>
 <body>
 <div class="wrap">
-  <header class="top"><div><div class="brand">My<span>Capital</span></div><div class="small">Personal investment tracker · Prototype 1.2</div></div><div class="tag">DEVELOPMENT MODE · NO MONEY MOVES</div></header>
-  <div class="notice"><strong>Important:</strong> This is a local prototype for recording and analysing figures. It is not connected to a bank or investment provider and cannot deposit, withdraw, or invest money. Your records stay in this browser on this device. Use Export backup or Copy Backup regularly and keep backup text private.</div>
+  <header class="top"><div><div class="brand">My<span>Capital</span></div><div class="small">Personal investment tracker · Prototype 1.1</div></div><div class="tag">DEVELOPMENT MODE · NO MONEY MOVES</div></header>
+  <div class="notice"><strong>Important:</strong> This is a local prototype for recording and analysing figures. It is not connected to a bank or investment provider and cannot deposit, withdraw, or invest money. Your records stay in this browser on this device. Use Export backup regularly and keep the downloaded file somewhere safe.</div>
 
   <section class="grid" aria-label="Portfolio summary">
     <div class="card"><div class="metric-label">Total contributions</div><div class="metric" id="contrib">UGX 0</div></div>
@@ -67,17 +67,11 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;p
     <h2>Backup and restore</h2>
     <p class="small">Export a complete backup file to keep a copy of your transactions, valuation and change history. Restore a backup on this device or another browser running MyCapital.</p>
     <div class="row">
-      <button id="exportBtn" type="button">Export backup file</button>
-      <button class="secondary" id="importBtn" type="button">Restore from file</button>
+      <button id="exportBtn" type="button">Export backup</button>
+      <button class="secondary" id="importBtn" type="button">Restore backup</button>
     </div>
-    <div class="row">
-      <button id="copyBackupBtn" type="button">Copy Backup</button>
-      <button class="secondary" id="restoreTextBtn" type="button">Paste Backup into MyCapital</button>
-    </div>
-    <label for="backupText">Backup text (copy it here, or paste a backup here on Chrome)</label>
-    <textarea id="backupText" rows="7" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="Tap Copy Backup in Phoenix, then paste the copied text here in Chrome." style="width:100%;padding:11px;background:#0c1728;color:var(--text);border:1px solid var(--line);border-radius:9px;font:12px/1.45 ui-monospace,monospace;resize:vertical"></textarea>
     <input id="importFile" type="file" accept="application/json,.json" hidden>
-    <div id="backupInfo" class="small" style="margin-top:8px">Copy Backup transfers records as text without downloading a file. Keep backup text private.</div>
+    <div id="backupInfo" class="small" style="margin-top:8px">Backups are downloaded to your device. They are not sent to a server.</div>
   </section>
 
   <section class="section card">
@@ -93,7 +87,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;p
     <div style="overflow-x:auto;margin-top:10px"><table><thead><tr><th>When</th><th>Action</th><th>Details</th></tr></thead><tbody id="history"></tbody></table></div>
     <div id="historyEmpty" class="empty">No changes recorded yet.</div>
   </section>
-  <div class="footer">Prototype 1.2: data remains on this device unless you export it. This is not a bank, wallet or investment provider. Keep backup files private. No investment transactions are executed by this app.</div>
+  <div class="footer">Prototype 1.1: data remains on this device unless you export it. This is not a bank, wallet or investment provider. Keep backup files private. No investment transactions are executed by this app.</div>
 </div>
 <script>
 (() => {
@@ -176,60 +170,26 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;p
     log('Demo data loaded','Replaced local records with clearly labelled fictional demo figures.');
     persist();alert('Demo data loaded. These figures are fictional and are not investment results.');
   });
-  function makeBackup(){
-    return {app:'MyCapital',formatVersion:1,exportedAt:stamp(),transactions,valuation,history};
-  }
-  function validateBackup(data){
-    if(!data||data.app!=='MyCapital'||data.formatVersion!==1||!Array.isArray(data.transactions)||!Array.isArray(data.history)||!(data.valuation===null||typeof data.valuation==='object'))throw new Error('This does not look like a valid MyCapital backup.');
-    if(!data.transactions.every(x=>x&&typeof x.id==='string'&&typeof x.type==='string'&&Number.isFinite(Number(x.amount))&&typeof x.date==='string'))throw new Error('The backup contains an invalid transaction.');
-    if(data.valuation!==null&&(!Number.isFinite(Number(data.valuation.amount))||typeof data.valuation.date!=='string'))throw new Error('The backup valuation is invalid.');
-    return data;
-  }
-  function restoreBackup(data,source){
-    validateBackup(data);
-    if(!confirm(`Restore backup with ${data.transactions.length} transactions? This will replace the records currently in this browser. Make a backup of current records first if you need them.`))return false;
-    transactions=data.transactions;valuation=data.valuation;history=data.history;
-    log('Backup restored',`Restored ${transactions.length} transactions from ${source}.`);
-    persist();$('backupInfo').textContent=`Backup restored successfully: ${transactions.length} transactions and ${history.length} history records.`;
-    return true;
-  }
   $('exportBtn').addEventListener('click',()=>{
-    log('Backup exported',`${transactions.length} transactions and ${history.length} history records included.`);persist();
-    const blob=new Blob([JSON.stringify(makeBackup(),null,2)],{type:'application/json'});
+    const backup={app:'MyCapital',formatVersion:1,exportedAt:stamp(),transactions,valuation,history};
+    const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
     const url=URL.createObjectURL(blob),a=document.createElement('a');
     a.href=url;a.download='mycapital-backup-'+today+'.json';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
-    $('backupInfo').textContent='Backup export started. Check your device Downloads folder and keep the file private.';
-  });
-  $('copyBackupBtn').addEventListener('click',async()=>{
-    log('Backup copied',`${transactions.length} transactions and ${history.length} history records included.`);persist();
-    const backupText=JSON.stringify(makeBackup(),null,2);
-    $('backupText').value=backupText;
-    try{
-      if(navigator.clipboard&&navigator.clipboard.writeText){
-        await navigator.clipboard.writeText(backupText);
-        $('backupInfo').textContent=`Backup copied. ${transactions.length} transactions and ${history.length} history records included. Open MyCapital in Chrome and paste into the Backup text box.`;
-      }else{
-        $('backupText').focus();$('backupText').select();
-        const copied=document.execCommand('copy');
-        $('backupInfo').textContent=copied?'Backup copied. Open MyCapital in Chrome and paste it into the Backup text box.':'Backup text is selected. Choose Copy from your phone menu, then paste it into Chrome.';
-      }
-    }catch(err){
-      $('backupText').focus();$('backupText').select();
-      $('backupInfo').textContent='Automatic copying was blocked. The backup text is selected; choose Copy from your phone menu, then paste it into Chrome.';
-    }
-  });
-  $('restoreTextBtn').addEventListener('click',()=>{
-    try{
-      const data=JSON.parse($('backupText').value.trim());
-      restoreBackup(data,'pasted text backup');
-    }catch(err){alert('Could not restore pasted backup: '+err.message);}
+    $('backupInfo').textContent='Backup export started. Check your device Downloads folder and keep the file somewhere safe.';
+    log('Backup exported',`${transactions.length} transactions and ${history.length} history records included.`);persist();
   });
   $('importBtn').addEventListener('click',()=>$('importFile').click());
   $('importFile').addEventListener('change',async e=>{
     const file=e.target.files&&e.target.files[0];if(!file)return;
     try{
       const data=JSON.parse(await file.text());
-      restoreBackup(data,file.name);
+      if(data.app!=='MyCapital'||data.formatVersion!==1||!Array.isArray(data.transactions)||!Array.isArray(data.history)||!(data.valuation===null||typeof data.valuation==='object'))throw new Error('This does not look like a valid MyCapital backup.');
+      if(!data.transactions.every(x=>x&&typeof x.id==='string'&&typeof x.type==='string'&&Number.isFinite(Number(x.amount))&&typeof x.date==='string'))throw new Error('The backup contains an invalid transaction.');
+      if(data.valuation!==null&&(!Number.isFinite(Number(data.valuation.amount))||typeof data.valuation.date!=='string'))throw new Error('The backup valuation is invalid.');
+      if(!confirm(`Restore backup with ${data.transactions.length} transactions? This will replace the records currently in this browser. Export a backup of current records first if you need them.`))return;
+      transactions=data.transactions;valuation=data.valuation;history=data.history;
+      log('Backup restored',`Restored ${transactions.length} transactions from ${file.name}.`);
+      persist();$('backupInfo').textContent='Backup restored successfully. Export a fresh backup after future changes.';
     }catch(err){alert('Could not restore backup: '+err.message);}
     finally{e.target.value='';}
   });
