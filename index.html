@@ -8,46 +8,73 @@
 <title>MyCapital — Personal Investment Tracker</title>
 <style>
 :root{
---bg:#0b1220;--panel:#121e31;--panel2:#192840;
---line:#2a3a53;--text:#eef4ff;--muted:#a9b8ce;
---accent:#62d6a5;--red:#ff8585;--blue:#8bb8ff;
+--bg:#0b1220;
+--panel:#121e31;
+--panel2:#192840;
+--line:#2a3a53;
+--text:#eef4ff;
+--muted:#a9b8ce;
+--accent:#62d6a5;
+--red:#ff8585;
+--blue:#8bb8ff;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);
-font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+html{scroll-behavior:smooth;scroll-padding-top:105px}
+body{
+margin:0;background:var(--bg);color:var(--text);
+font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif
+}
 .wrap{max-width:1100px;margin:auto;padding:20px 14px 45px}
-.top{display:flex;justify-content:space-between;align-items:center;
-gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.top{
+display:flex;justify-content:space-between;align-items:center;
+gap:12px;flex-wrap:wrap;margin-bottom:18px
+}
 .brand{font-size:26px;font-weight:850;letter-spacing:.4px}
 .brand span{color:var(--accent)}
-.tag{font-size:11px;color:var(--muted);border:1px solid var(--line);
-padding:5px 9px;border-radius:20px}
-.notice{background:#17263a;border:1px solid #38506c;
-color:#d7e6fb;padding:12px 14px;border-radius:12px;
-margin-bottom:17px;font-size:13px}
+.tag{
+font-size:11px;color:var(--muted);border:1px solid var(--line);
+padding:5px 9px;border-radius:20px
+}
+.notice{
+background:#17263a;border:1px solid #38506c;color:#d7e6fb;
+padding:12px 14px;border-radius:12px;margin-bottom:17px;font-size:13px
+}
 .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-.card{background:var(--panel);border:1px solid var(--line);
-border-radius:15px;padding:16px;min-width:0}
+.card{
+background:var(--panel);border:1px solid var(--line);
+border-radius:15px;padding:16px;min-width:0
+}
 .metric-label{color:var(--muted);font-size:12px}
-.metric{font-size:clamp(19px,3vw,26px);font-weight:750;
-margin-top:7px;overflow-wrap:anywhere}
+.metric{
+font-size:clamp(19px,3vw,26px);font-weight:750;
+margin-top:7px;overflow-wrap:anywhere
+}
 .positive{color:var(--accent)}
 .negative{color:var(--red)}
 h2{font-size:17px;margin:0 0 13px}
 h3{font-size:14px;margin:0 0 9px}
-.section{margin-top:17px}
+.section{margin-top:17px;scroll-margin-top:105px}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:13px}
 label{display:block;color:var(--muted);font-size:12px;margin:10px 0 5px}
 input,select,button{font:inherit}
-input,select{width:100%;padding:11px;background:#0c1728;
-color:var(--text);border:1px solid var(--line);border-radius:9px}
-button{border:0;border-radius:9px;padding:11px 14px;
+input,select,textarea{
+width:100%;padding:11px;background:#0c1728;color:var(--text);
+border:1px solid var(--line);border-radius:9px
+}
+button{
+border:0;border-radius:9px;padding:11px 14px;
 background:var(--accent);color:#082016;font-weight:750;
-cursor:pointer;margin-top:12px}
-button.secondary{background:#263a55;color:var(--text);
-border:1px solid var(--line)}
+cursor:pointer;margin-top:12px
+}
+button.secondary{
+background:#263a55;color:var(--text);border:1px solid var(--line)
+}
 button.danger{background:#482b35;color:#ffd9df}
 button:disabled{opacity:.5;cursor:not-allowed}
+button:focus-visible,input:focus-visible,select:focus-visible,
+textarea:focus-visible{
+outline:2px solid var(--blue);outline-offset:2px
+}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .row>*{flex:1;min-width:0}
 .small{font-size:12px;color:var(--muted)}
@@ -57,19 +84,49 @@ th{color:var(--muted);font-weight:600}
 .empty{color:var(--muted);padding:18px 4px;text-align:center}
 .actions button{margin:0;padding:6px 9px;font-size:12px}
 .footer{margin-top:22px;color:var(--muted);font-size:12px}
-.progress{height:12px;background:#0c1728;border-radius:20px;
-overflow:hidden;margin:12px 0}
-.progress-fill{height:100%;width:0;background:var(--accent);
-border-radius:20px;transition:width .3s}
+.progress{
+height:12px;background:#0c1728;border-radius:20px;
+overflow:hidden;margin:12px 0
+}
+.progress-fill{
+height:100%;width:0;background:var(--accent);
+border-radius:20px;transition:width .3s
+}
 .chart{width:100%;height:auto;display:block;min-height:160px}
 .chart-label{font-size:11px;fill:var(--muted)}
-.chart-line{fill:none;stroke:var(--blue);stroke-width:3;
-stroke-linecap:round;stroke-linejoin:round}
+.chart-line{
+fill:none;stroke:var(--blue);stroke-width:3;
+stroke-linecap:round;stroke-linejoin:round
+}
 .chart-dot{fill:var(--accent)}
 .chart-grid{stroke:var(--line);stroke-dasharray:4 5}
-.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
-.tabs span{font-size:12px;color:var(--muted);
-padding:5px 9px;border:1px solid var(--line);border-radius:20px}
+
+/* Navigation */
+.tabs{
+display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;
+position:sticky;top:0;z-index:20;
+padding:10px 0;background:rgba(11,18,32,.96);
+backdrop-filter:blur(10px)
+}
+.tabs button{
+font-size:12px;color:var(--muted);
+padding:8px 12px;border:1px solid var(--line);
+border-radius:20px;background:var(--panel);
+margin:0;font-weight:650;flex:0 0 auto
+}
+.tabs button.active{
+background:var(--accent);color:#082016;
+border-color:var(--accent)
+}
+.tabs button:active{transform:scale(.97)}
+.section-heading{
+display:flex;justify-content:space-between;
+align-items:center;gap:10px;flex-wrap:wrap
+}
+.status{
+font-size:11px;color:var(--accent);
+border:1px solid var(--line);padding:4px 8px;border-radius:20px
+}
 @media(max-width:720px){
 .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 .two{grid-template-columns:1fr}
@@ -77,6 +134,12 @@ padding:5px 9px;border:1px solid var(--line);border-radius:20px}
 table{font-size:12px}
 th,td{padding:8px 4px}
 .brand{font-size:23px}
+.tabs{gap:6px}
+.tabs button{padding:8px 10px;font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){
+html{scroll-behavior:auto}
+.progress-fill{transition:none}
 }
 </style>
 </head>
@@ -86,7 +149,7 @@ th,td{padding:8px 4px}
 <header class="top">
 <div>
 <div class="brand">My<span>Capital</span></div>
-<div class="small">Personal investment tracker · Prototype 1.3</div>
+<div class="small">Personal investment tracker · Prototype 1.4</div>
 </div>
 <div class="tag">DEVELOPMENT MODE · NO MONEY MOVES</div>
 </header>
@@ -98,12 +161,21 @@ Your records remain in this browser on this device.
 Export backups regularly and keep backup text private.
 </div>
 
-<div class="tabs">
-<span>Portfolio</span><span>Performance</span>
-<span>Monthly reports</span><span>Investment goals</span>
+<nav class="tabs" aria-label="Page sections">
+<button type="button" class="active" data-target="portfolioSection"
+aria-current="location">Portfolio</button>
+<button type="button" data-target="performanceSection">Performance</button>
+<button type="button" data-target="reportsSection">Monthly reports</button>
+<button type="button" data-target="goalsSection">Investment goals</button>
+</nav>
+
+<section id="portfolioSection" class="section">
+<div class="section-heading">
+<h2>Portfolio overview</h2>
+<span class="status">Your recorded position</span>
 </div>
 
-<section class="grid">
+<div class="grid">
 <div class="card">
 <div class="metric-label">Total contributions</div>
 <div class="metric" id="contrib">UGX 0</div>
@@ -121,9 +193,10 @@ Export backups regularly and keep backup text private.
 <div class="metric-label">Net cash withdrawn</div>
 <div class="metric" id="withdrawn">UGX 0</div>
 </div>
+</div>
 </section>
 
-<section class="section card">
+<section id="performanceSection" class="section card">
 <h2>Portfolio performance</h2>
 <p class="small">Your recorded investment valuations over time.</p>
 <div id="chartArea">
@@ -194,7 +267,7 @@ placeholder="e.g. 10250" required>
 </div>
 </section>
 
-<section class="section card">
+<section id="goalsSection" class="section card">
 <h2>Investment goal tracker</h2>
 <p class="small">Set a target and monitor your progress using your current investment value.</p>
 
@@ -220,7 +293,7 @@ placeholder="e.g. 500000" required>
 </div>
 </section>
 
-<section class="section card">
+<section id="reportsSection" class="section card">
 <h2>Monthly report</h2>
 <p class="small">Review the transactions recorded for a selected month.</p>
 <label for="reportMonth">Select month</label>
@@ -265,9 +338,7 @@ browser running MyCapital.
 <textarea id="backupText" rows="7" spellcheck="false"
 autocapitalize="off" autocomplete="off"
 placeholder="Paste your backup text here."
-style="width:100%;padding:11px;background:#0c1728;color:var(--text);
-border:1px solid var(--line);border-radius:9px;
-font:12px/1.45 monospace;resize:vertical"></textarea>
+style="font:12px/1.45 monospace;resize:vertical"></textarea>
 <input id="importFile" type="file" accept="application/json,.json" hidden>
 <div id="backupInfo" class="small" style="margin-top:8px">
 Keep backup files and text private.
@@ -301,7 +372,7 @@ Keep backup files and text private.
 </section>
 
 <div class="footer">
-MyCapital Prototype 1.3 · Local record keeping only.
+MyCapital Prototype 1.4 · Local record keeping only.
 Not a bank, wallet or investment provider.
 No investment transactions are executed by this application.
 </div>
@@ -315,13 +386,10 @@ No investment transactions are executed by this application.
 const KEY='mycapital_v1_transactions';
 const VALUE_KEY='mycapital_v1_valuation';
 const HISTORY_KEY='mycapital_v1_history';
-
-// New storage keys.
 const GOAL_KEY='mycapital_v1_goal';
 const VALUATIONS_KEY='mycapital_v1_valuations';
 
 const $=id=>document.getElementById(id);
-
 const money=n=>'UGX '+Math.round(Number(n)||0).toLocaleString('en-US');
 
 function localDate(){
@@ -337,20 +405,19 @@ const today=localDate();
 function read(key,fallback){
  try{
   const v=localStorage.getItem(key);
-  return v?JSON.parse(v):fallback;
+  return v===null?fallback:JSON.parse(v);
  }catch(e){
   return fallback;
  }
 }
 
-function stamp(){
- return new Date().toISOString();
-}
+function stamp(){return new Date().toISOString()}
 
 function makeId(){
- return crypto.randomUUID?
- crypto.randomUUID():
- Date.now().toString(36)+Math.random().toString(36).slice(2);
+ if(window.crypto&&typeof window.crypto.randomUUID==='function'){
+  return window.crypto.randomUUID();
+ }
+ return Date.now().toString(36)+Math.random().toString(36).slice(2);
 }
 
 let transactions=read(KEY,[]);
@@ -359,34 +426,58 @@ let history=read(HISTORY_KEY,[]);
 let goal=read(GOAL_KEY,null);
 let valuations=read(VALUATIONS_KEY,[]);
 
-// Recover the previous valuation as the first chart point.
-if(!Array.isArray(valuations)) valuations=[];
+if(!Array.isArray(transactions))transactions=[];
+if(!Array.isArray(history))history=[];
+if(!Array.isArray(valuations))valuations=[];
 
-if(valuation&&valuations.length===0){
+// Migrate the previous single valuation into the history list.
+if(valuation&&valuations.length===0&&
+ Number.isFinite(Number(valuation.amount))&&valuation.date){
  valuations.push({
   amount:Number(valuation.amount),
   date:valuation.date
  });
 }
 
-if(!Array.isArray(transactions)) transactions=[];
-if(!Array.isArray(history)) history=[];
+// Normalize and sort valuation records.
+valuations=valuations.filter(v=>
+ v&&Number.isFinite(Number(v.amount))&&
+ Number(v.amount)>=0&&validDate(v.date)
+).map(v=>({amount:Number(v.amount),date:v.date}));
+
+valuations.sort((a,b)=>a.date.localeCompare(b.date));
+
+if(goal!==null&&(!Number.isFinite(Number(goal))||Number(goal)<=0)){
+ goal=null;
+}
+
+function validDate(value){
+ return typeof value==='string'&&
+ /^\d{4}-\d{2}-\d{2}$/.test(value)&&
+ !Number.isNaN(Date.parse(value+'T00:00:00'));
+}
+
+function latestValuation(){
+ if(valuations.length){
+  const sorted=valuations.slice().sort((a,b)=>a.date.localeCompare(b.date));
+  return sorted[sorted.length-1];
+ }
+ return valuation&&Number.isFinite(Number(valuation.amount))?
+ valuation:null;
+}
+
+// Keep the legacy single valuation synchronized with the latest entry.
+valuation=latestValuation();
 
 $('date').value=today;
 $('valueDate').value=today;
 $('reportMonth').value=today.slice(0,7);
 
-if(goal&&Number.isFinite(Number(goal))){
- $('goalAmount').value=goal;
-}
+if(goal!==null)$('goalAmount').value=goal;
 
 function log(action,details){
- history.unshift({
-  at:stamp(),
-  action,
-  details
- });
- if(history.length>500) history=history.slice(0,500);
+ history.unshift({at:stamp(),action,details});
+ if(history.length>500)history=history.slice(0,500);
 }
 
 function persist(){
@@ -397,19 +488,21 @@ function persist(){
   localStorage.setItem(GOAL_KEY,JSON.stringify(goal));
   localStorage.setItem(VALUATIONS_KEY,JSON.stringify(valuations));
   render();
+  return true;
  }catch(e){
   alert('Could not save records. Your browser storage may be full. Export a backup and check available device storage.');
+  return false;
  }
 }
 
-function effectiveTotals(){
+function effectiveTotals(list){
  const sums={
   deposit:0,withdrawal:0,fee:0,tax:0,gain:0,loss:0
  };
 
- for(const x of transactions){
+ for(const x of list){
   if(x.type==='correction'&&
-     Object.prototype.hasOwnProperty.call(sums,x.reversesType)){
+  Object.prototype.hasOwnProperty.call(sums,x.reversesType)){
    sums[x.reversesType]-=Number(x.amount)||0;
   }else if(Object.prototype.hasOwnProperty.call(sums,x.type)){
    sums[x.type]+=Number(x.amount)||0;
@@ -419,11 +512,13 @@ function effectiveTotals(){
 }
 
 function totals(){
- const s=effectiveTotals();
+ const s=effectiveTotals(transactions);
  const deposits=s.deposit;
  const withdrawals=s.withdrawal;
- const current=valuation?
- Number(valuation.amount):
+ const latest=latestValuation();
+
+ const current=latest?
+ Number(latest.amount):
  Math.max(0,deposits-withdrawals-s.fee-s.tax+s.gain-s.loss);
 
  const netProfit=current+withdrawals-deposits;
@@ -445,7 +540,7 @@ function escapeHtml(s){
 function renderChart(){
  const area=$('chartArea');
  const points=valuations
-  .filter(v=>Number.isFinite(Number(v.amount))&&v.date)
+  .filter(v=>Number.isFinite(Number(v.amount))&&validDate(v.date))
   .slice()
   .sort((a,b)=>a.date.localeCompare(b.date));
 
@@ -454,11 +549,9 @@ function renderChart(){
   return;
  }
 
- const data=points.length===1?
- [...points,...points]:points;
-
+ const data=points.length===1?[points[0],points[0]]:points;
  const width=650,height=220;
- const left=48,right=18,top=20,bottom=36;
+ const left=70,right=18,top=20,bottom=36;
  const values=data.map(v=>Number(v.amount));
  const min=Math.min(...values);
  const max=Math.max(...values);
@@ -489,8 +582,8 @@ function renderChart(){
  x2="${width-right}" y2="${top}"/>
  <line class="chart-grid" x1="${left}" y1="${height-bottom}"
  x2="${width-right}" y2="${height-bottom}"/>
- <text class="chart-label" x="3" y="${top+4}">${escapeHtml(money(max))}</text>
- <text class="chart-label" x="3" y="${height-bottom}">${escapeHtml(money(min))}</text>
+ <text class="chart-label" x="${left-8}" y="${top+4}" text-anchor="end">${escapeHtml(money(max))}</text>
+ <text class="chart-label" x="${left-8}" y="${height-bottom}" text-anchor="end">${escapeHtml(money(min))}</text>
  <path class="chart-line" d="${path}"/>
  ${dots}
  <text class="chart-label" x="${left}" y="${height-8}">${escapeHtml(first.date)}</text>
@@ -503,7 +596,7 @@ function renderChart(){
 function renderGoal(t){
  const bar=$('goalBar');
 
- if(!goal||Number(goal)<=0){
+ if(goal===null||Number(goal)<=0){
   $('goalProgress').textContent='No goal set';
   $('goalRemaining').textContent='—';
   bar.style.width='0%';
@@ -525,18 +618,7 @@ function renderMonthly(){
   typeof x.date==='string'&&x.date.slice(0,7)===month
  );
 
- const sums={
-  deposit:0,withdrawal:0,fee:0,tax:0,gain:0,loss:0
- };
-
- for(const x of filtered){
-  if(x.type==='correction'&&
-  Object.prototype.hasOwnProperty.call(sums,x.reversesType)){
-   sums[x.reversesType]-=Number(x.amount)||0;
-  }else if(Object.prototype.hasOwnProperty.call(sums,x.type)){
-   sums[x.type]+=Number(x.amount)||0;
-  }
- }
+ const sums=effectiveTotals(filtered);
 
  $('monthDeposits').textContent=money(sums.deposit);
  $('monthWithdrawals').textContent=money(sums.withdrawal);
@@ -564,13 +646,14 @@ function render(){
  $('taxTotal').textContent=money(t.taxes);
  $('gainsTotal').textContent=money(t.gains-t.losses);
 
- $('valuationInfo').textContent=valuation?
- 'Latest provider valuation: '+money(valuation.amount)+
- ' on '+valuation.date+'.':
+ const latest=latestValuation();
+ $('valuationInfo').textContent=latest?
+ 'Latest provider valuation: '+money(latest.amount)+
+ ' on '+latest.date+'.':
  'No provider valuation recorded yet.';
 
  $('ledger').innerHTML=transactions.slice()
- .sort((a,b)=>b.date.localeCompare(a.date))
+ .sort((a,b)=>String(b.date).localeCompare(String(a.date)))
  .map(x=>{
   const label=x.type==='correction'?
   'Correction · reverses '+x.reversesType:x.type;
@@ -595,7 +678,7 @@ function render(){
 
  $('history').innerHTML=history.map(h=>`
  <tr>
- <td>${escapeHtml(new Date(h.at).toLocaleString())}</td>
+ <td>${escapeHtml(h.at?new Date(h.at).toLocaleString():'—')}</td>
  <td>${escapeHtml(h.action)}</td>
  <td>${escapeHtml(h.details)}</td>
  </tr>`).join('');
@@ -607,6 +690,48 @@ function render(){
  renderMonthly();
 }
 
+// Navigation: all sections stay visible.
+// Selecting a tab highlights it and scrolls to its section.
+const navButtons=Array.from(document.querySelectorAll('.tabs button'));
+
+function setActiveTab(id){
+ navButtons.forEach(button=>{
+  const active=button.dataset.target===id;
+  button.classList.toggle('active',active);
+  if(active)button.setAttribute('aria-current','location');
+  else button.removeAttribute('aria-current');
+ });
+}
+
+navButtons.forEach(button=>{
+ button.addEventListener('click',()=>{
+  const target=$(button.dataset.target);
+  if(!target)return;
+  setActiveTab(button.dataset.target);
+  target.scrollIntoView({behavior:'smooth',block:'start'});
+ });
+});
+
+// Update the highlighted tab when scrolling between sections.
+if('IntersectionObserver' in window){
+ const observer=new IntersectionObserver(entries=>{
+  const visible=entries
+   .filter(entry=>entry.isIntersecting)
+   .sort((a,b)=>b.intersectionRatio-a.intersectionRatio);
+
+  if(visible.length)setActiveTab(visible[0].target.id);
+ },{
+  rootMargin:'-110px 0px -55% 0px',
+  threshold:[0,.15,.3,.5]
+ });
+
+ ['portfolioSection','performanceSection','reportsSection','goalsSection']
+ .forEach(id=>{
+  const section=$(id);
+  if(section)observer.observe(section);
+ });
+}
+
 // Transaction recording.
 $('txForm').addEventListener('submit',e=>{
  e.preventDefault();
@@ -615,28 +740,27 @@ $('txForm').addEventListener('submit',e=>{
  const type=$('type').value;
  const date=$('date').value;
 
- if(!Number.isFinite(amount)||amount<=0)
-  return alert('Enter a valid amount greater than zero.');
+ if(!Number.isSafeInteger(amount)||amount<=0)
+  return alert('Enter a valid whole-number amount greater than zero.');
 
- if(!date) return alert('Select a transaction date.');
+ if(!validDate(date))return alert('Select a valid transaction date.');
 
  if(type==='withdrawal'&&amount>totals().current)
   return alert('This withdrawal is greater than the currently recorded value. Check your figures first.');
 
  const tx={
-  id:makeId(),
-  type,amount,date,
+  id:makeId(),type,amount,date,
   note:$('note').value.trim()
  };
 
  transactions.push(tx);
-
  log('Transaction added',
  `${type}: ${money(amount)} on ${date}${tx.note?' — '+tx.note:''}`);
 
- persist();
- e.target.reset();
- $('date').value=today;
+ if(persist()){
+  e.target.reset();
+  $('date').value=today;
+ }
 });
 
 // Valuation recording.
@@ -646,22 +770,29 @@ $('valueForm').addEventListener('submit',e=>{
  const amount=Number($('currentValue').value);
  const date=$('valueDate').value;
 
- if(!Number.isFinite(amount)||amount<0)
-  return alert('Enter a valid valuation.');
+ if(!Number.isSafeInteger(amount)||amount<0)
+  return alert('Enter a valid whole-number valuation.');
 
- if(!date) return alert('Select a valuation date.');
+ if(!validDate(date))return alert('Select a valid valuation date.');
 
- valuation={amount,date};
+ // Replace a valuation for the same date rather than duplicating it.
+ const existingIndex=valuations.findIndex(v=>v.date===date);
 
- valuations.push({amount,date});
+ if(existingIndex>=0){
+  valuations[existingIndex]={amount,date};
+ }else{
+  valuations.push({amount,date});
+ }
+
  valuations.sort((a,b)=>a.date.localeCompare(b.date));
+ valuation=latestValuation();
 
- log('Valuation updated',
- `${money(amount)} on ${date}`);
+ log('Valuation updated',`${money(amount)} on ${date}`);
 
- persist();
- e.target.reset();
- $('valueDate').value=today;
+ if(persist()){
+  e.target.reset();
+  $('valueDate').value=today;
+ }
 });
 
 // Investment goal.
@@ -670,14 +801,11 @@ $('goalForm').addEventListener('submit',e=>{
 
  const amount=Number($('goalAmount').value);
 
- if(!Number.isFinite(amount)||amount<=0)
-  return alert('Enter a valid goal greater than zero.');
+ if(!Number.isSafeInteger(amount)||amount<=0)
+  return alert('Enter a valid whole-number goal greater than zero.');
 
  goal=amount;
-
- log('Investment goal updated',
- 'New target: '+money(goal));
-
+ log('Investment goal updated','New target: '+money(goal));
  persist();
 });
 
@@ -686,9 +814,10 @@ $('reportMonth').addEventListener('change',renderMonthly);
 
 // Transaction corrections.
 $('ledger').addEventListener('click',e=>{
- const id=e.target.dataset.reverse;
- if(!id)return;
+ const button=e.target.closest('button[data-reverse]');
+ if(!button)return;
 
+ const id=button.dataset.reverse;
  const original=transactions.find(x=>x.id===id);
 
  if(!original||original.type==='correction'||original.reversedBy)return;
@@ -716,26 +845,21 @@ $('ledger').addEventListener('click',e=>{
  persist();
 });
 
-// Demo records are blocked when real records exist.
+// Demo data protection.
 $('demoBtn').addEventListener('click',()=>{
- const demoOnly=transactions.length>0&&
- transactions.every(x=>
-  typeof x.note==='string'&&x.note.startsWith('DEMO ONLY')
- );
+ const hasAnyData=
+ transactions.length>0||
+ valuations.length>0||
+ valuation!==null||
+ goal!==null||
+ history.length>0;
 
- const hasRealRecords=transactions.length>0&&!demoOnly;
-
- if(hasRealRecords){
-  alert('Demo data is blocked because this ledger contains records that are not labelled as demo data. Your records have not been changed.');
+ if(hasAnyData){
+  alert('Demo data is blocked because this browser already contains records or settings. Your records have not been changed. Export a backup before testing demo data.');
   return;
  }
 
- if(valuation&&!demoOnly&&transactions.length===0){
-  alert('A valuation already exists. Your records have not been changed. Export a backup before making any changes.');
-  return;
- }
-
- if(transactions.length&&!confirm('Replace the existing demo records with fresh fictional demo figures?'))return;
+ if(!confirm('Load fictional demo figures? This is only sample data, not a real investment result.'))return;
 
  transactions=[
   {id:'demo1',type:'deposit',amount:10000,date:today,note:'DEMO ONLY — starting contribution'},
@@ -745,13 +869,13 @@ $('demoBtn').addEventListener('click',()=>{
  valuation={amount:10150,date:today};
  valuations=[{amount:10150,date:today}];
  history=[];
+ goal=null;
 
- log('Demo data loaded',
- 'Fictional demonstration figures loaded.');
+ log('Demo data loaded','Fictional demonstration figures loaded.');
 
- persist();
-
- alert('Demo data loaded. These figures are fictional, not actual investment results.');
+ if(persist()){
+  alert('Demo data loaded. These figures are fictional, not actual investment results.');
+ }
 });
 
 // Backup creation.
@@ -773,35 +897,57 @@ function validateBackup(data){
  ![1,2].includes(data.formatVersion)||
  !Array.isArray(data.transactions)||
  !Array.isArray(data.history)||
- !(data.valuation===null||typeof data.valuation==='object')){
+ !(data.valuation===null||
+ (typeof data.valuation==='object'&&!Array.isArray(data.valuation)))){
   throw new Error('This does not look like a valid MyCapital backup.');
  }
 
- if(!data.transactions.every(x=>
- x&&typeof x.id==='string'&&
- typeof x.type==='string'&&
- Number.isFinite(Number(x.amount))&&
- typeof x.date==='string')){
-  throw new Error('The backup contains an invalid transaction.');
+ const ids=new Set();
+
+ for(const x of data.transactions){
+  if(!x||typeof x.id!=='string'||!x.id||
+  ids.has(x.id)||typeof x.type!=='string'||
+  !Number.isSafeInteger(Number(x.amount))||
+  Number(x.amount)<=0||!validDate(x.date)){
+   throw new Error('The backup contains an invalid transaction.');
+  }
+  ids.add(x.id);
+
+  const allowed=['deposit','withdrawal','fee','tax','gain','loss','correction'];
+  if(!allowed.includes(x.type)){
+   throw new Error('The backup contains an unknown transaction type.');
+  }
+
+  if(x.type==='correction'&&
+  !['deposit','withdrawal','fee','tax','gain','loss'].includes(x.reversesType)){
+   throw new Error('The backup contains an invalid correction entry.');
+  }
  }
 
  if(data.valuation!==null&&
- (!Number.isFinite(Number(data.valuation.amount))||
- typeof data.valuation.date!=='string')){
+ (!Number.isSafeInteger(Number(data.valuation.amount))||
+ Number(data.valuation.amount)<0||!validDate(data.valuation.date))){
   throw new Error('The backup valuation is invalid.');
  }
 
  if(data.valuations!==undefined&&
  (!Array.isArray(data.valuations)||
  !data.valuations.every(v=>
- v&&Number.isFinite(Number(v.amount))&&
- typeof v.date==='string'))){
+ v&&Number.isSafeInteger(Number(v.amount))&&
+ Number(v.amount)>=0&&validDate(v.date)))){
   throw new Error('The valuation history is invalid.');
  }
 
  if(data.goal!==undefined&&data.goal!==null&&
- (!Number.isFinite(Number(data.goal))||Number(data.goal)<=0)){
+ (!Number.isSafeInteger(Number(data.goal))||Number(data.goal)<=0)){
   throw new Error('The investment goal is invalid.');
+ }
+
+ if(!data.history.every(h=>
+ h&&typeof h==='object'&&
+ typeof h.action==='string'&&
+ typeof h.details==='string')){
+  throw new Error('The backup change history is invalid.');
  }
 
  return data;
@@ -814,23 +960,36 @@ function restoreBackup(data,source){
  `Restore backup with ${data.transactions.length} transactions? This will replace the records currently in this browser. Export current records first if you need them.`
  ))return false;
 
+ const oldState={
+  transactions,valuation,history,valuations,goal
+ };
+
  transactions=data.transactions;
  valuation=data.valuation;
  history=data.history;
 
  valuations=Array.isArray(data.valuations)?
- data.valuations.slice():
+ data.valuations.map(v=>({amount:Number(v.amount),date:v.date})):
  (valuation?[{amount:Number(valuation.amount),date:valuation.date}]:[]);
 
+ valuations.sort((a,b)=>a.date.localeCompare(b.date));
+ valuation=latestValuation();
  goal=data.goal??null;
 
  log('Backup restored',
  `Restored ${transactions.length} transactions from ${source}.`);
 
- persist();
+ if(!persist()){
+  transactions=oldState.transactions;
+  valuation=oldState.valuation;
+  history=oldState.history;
+  valuations=oldState.valuations;
+  goal=oldState.goal;
+  render();
+  return false;
+ }
 
  $('goalAmount').value=goal||'';
-
  $('backupInfo').textContent=
  `Backup restored: ${transactions.length} transactions and ${history.length} history records.`;
 
@@ -842,7 +1001,7 @@ $('exportBtn').addEventListener('click',()=>{
  log('Backup exported',
  `${transactions.length} transactions and ${history.length} history records included.`);
 
- persist();
+ if(!persist())return;
 
  const blob=new Blob(
  [JSON.stringify(makeBackup(),null,2)],
@@ -859,7 +1018,7 @@ $('exportBtn').addEventListener('click',()=>{
  a.click();
  a.remove();
 
- setTimeout(()=>URL.revokeObjectURL(url),1000);
+ setTimeout(()=>URL.revokeObjectURL(url),1500);
 
  $('backupInfo').textContent=
  'Backup export started. Check your Downloads folder and keep the file private.';
@@ -870,7 +1029,7 @@ $('copyBackupBtn').addEventListener('click',async()=>{
  log('Backup copied',
  `${transactions.length} transactions and ${history.length} history records included.`);
 
- persist();
+ if(!persist())return;
 
  const backupText=JSON.stringify(makeBackup(),null,2);
  $('backupText').value=backupText;
@@ -878,9 +1037,8 @@ $('copyBackupBtn').addEventListener('click',async()=>{
  try{
   if(navigator.clipboard&&navigator.clipboard.writeText){
    await navigator.clipboard.writeText(backupText);
-
    $('backupInfo').textContent=
-   'Backup copied. Open MyCapital in Chrome and paste into the backup text box.';
+   'Backup copied. Paste it into the other MyCapital browser when needed.';
   }else{
    $('backupText').focus();
    $('backupText').select();
@@ -894,7 +1052,6 @@ $('copyBackupBtn').addEventListener('click',async()=>{
  }catch(err){
   $('backupText').focus();
   $('backupText').select();
-
   $('backupInfo').textContent=
   'Automatic copying was blocked. Use your phone menu to Copy the selected backup text.';
  }
@@ -903,9 +1060,11 @@ $('copyBackupBtn').addEventListener('click',async()=>{
 // Text restore.
 $('restoreTextBtn').addEventListener('click',()=>{
  try{
-  const data=JSON.parse($('backupText').value.trim());
+  const text=$('backupText').value.trim();
+  if(!text)throw new Error('Paste your backup text first.');
 
-  if(!restoreBackup(data,'pasted text backup'))return;
+  const data=JSON.parse(text);
+  restoreBackup(data,'pasted text backup');
  }catch(err){
   alert('Could not restore pasted backup: '+err.message);
  }
