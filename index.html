@@ -149,7 +149,7 @@ html{scroll-behavior:auto}
 <header class="top">
 <div>
 <div class="brand">My<span>Capital</span></div>
-<div class="small">Personal investment tracker · Prototype 1.4</div>
+<div class="small">Personal investment tracker · Prototype 1.4.1</div>
 </div>
 <div class="tag">DEVELOPMENT MODE · NO MONEY MOVES</div>
 </header>
@@ -372,7 +372,7 @@ Keep backup files and text private.
 </section>
 
 <div class="footer">
-MyCapital Prototype 1.4 · Local record keeping only.
+MyCapital Prototype 1.4.1 · Local record keeping only.
 Not a bank, wallet or investment provider.
 No investment transactions are executed by this application.
 </div>
@@ -452,9 +452,17 @@ if(goal!==null&&(!Number.isFinite(Number(goal))||Number(goal)<=0)){
 }
 
 function validDate(value){
- return typeof value==='string'&&
- /^\d{4}-\d{2}-\d{2}$/.test(value)&&
- !Number.isNaN(Date.parse(value+'T00:00:00'));
+ if(typeof value!=='string'||
+ !/^\d{4}-\d{2}-\d{2}$/.test(value)){
+  return false;
+ }
+
+ const date=new Date(value+'T00:00:00');
+
+ return !Number.isNaN(date.getTime())&&
+ date.getFullYear()===Number(value.slice(0,4))&&
+ date.getMonth()+1===Number(value.slice(5,7))&&
+ date.getDate()===Number(value.slice(8,10));
 }
 
 function latestValuation(){
