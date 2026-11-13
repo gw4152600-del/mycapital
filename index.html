@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -6,234 +7,929 @@
 <meta name="theme-color" content="#101a2b">
 <title>MyCapital — Personal Investment Tracker</title>
 <style>
-:root{--bg:#0b1220;--panel:#121e31;--panel2:#192840;--line:#2a3a53;--text:#eef4ff;--muted:#a9b8ce;--accent:#62d6a5;--red:#ff8585;--blue:#8bb8ff}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-.wrap{max-width:1050px;margin:auto;padding:22px 16px 48px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px}
-.brand{font-size:24px;font-weight:800;letter-spacing:.4px}.brand span{color:var(--accent)}.tag{font-size:12px;color:var(--muted);border:1px solid var(--line);padding:5px 9px;border-radius:20px}
-.notice{background:#17263a;border:1px solid #38506c;color:#d7e6fb;padding:12px 14px;border-radius:12px;margin-bottom:18px;font-size:13px}
-.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.card{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:16px;min-width:0}
-.metric-label{color:var(--muted);font-size:12px}.metric{font-size:clamp(19px,3vw,26px);font-weight:750;margin-top:7px;overflow-wrap:anywhere}.positive{color:var(--accent)}.negative{color:var(--red)}
-h2{font-size:17px;margin:0 0 13px}.section{margin-top:20px}.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-label{display:block;color:var(--muted);font-size:12px;margin:10px 0 5px}input,select,button{font:inherit}input,select{width:100%;padding:11px;background:#0c1728;color:var(--text);border:1px solid var(--line);border-radius:9px}
-button{border:0;border-radius:9px;padding:11px 14px;background:var(--accent);color:#082016;font-weight:750;cursor:pointer;margin-top:13px}
-button.secondary{background:#263a55;color:var(--text);border:1px solid var(--line)}button.danger{background:#482b35;color:#ffd9df}
-.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.row>*{flex:1}
-table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:10px 7px;border-bottom:1px solid var(--line)}th{color:var(--muted);font-weight:600}
-.empty{color:var(--muted);padding:18px 4px;text-align:center}.small{font-size:12px;color:var(--muted)}.actions button{margin:0;padding:6px 9px;font-size:12px}
+:root{
+--bg:#0b1220;--panel:#121e31;--panel2:#192840;
+--line:#2a3a53;--text:#eef4ff;--muted:#a9b8ce;
+--accent:#62d6a5;--red:#ff8585;--blue:#8bb8ff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.wrap{max-width:1100px;margin:auto;padding:20px 14px 45px}
+.top{display:flex;justify-content:space-between;align-items:center;
+gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.brand{font-size:26px;font-weight:850;letter-spacing:.4px}
+.brand span{color:var(--accent)}
+.tag{font-size:11px;color:var(--muted);border:1px solid var(--line);
+padding:5px 9px;border-radius:20px}
+.notice{background:#17263a;border:1px solid #38506c;
+color:#d7e6fb;padding:12px 14px;border-radius:12px;
+margin-bottom:17px;font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--line);
+border-radius:15px;padding:16px;min-width:0}
+.metric-label{color:var(--muted);font-size:12px}
+.metric{font-size:clamp(19px,3vw,26px);font-weight:750;
+margin-top:7px;overflow-wrap:anywhere}
+.positive{color:var(--accent)}
+.negative{color:var(--red)}
+h2{font-size:17px;margin:0 0 13px}
+h3{font-size:14px;margin:0 0 9px}
+.section{margin-top:17px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+label{display:block;color:var(--muted);font-size:12px;margin:10px 0 5px}
+input,select,button{font:inherit}
+input,select{width:100%;padding:11px;background:#0c1728;
+color:var(--text);border:1px solid var(--line);border-radius:9px}
+button{border:0;border-radius:9px;padding:11px 14px;
+background:var(--accent);color:#082016;font-weight:750;
+cursor:pointer;margin-top:12px}
+button.secondary{background:#263a55;color:var(--text);
+border:1px solid var(--line)}
+button.danger{background:#482b35;color:#ffd9df}
+button:disabled{opacity:.5;cursor:not-allowed}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row>*{flex:1;min-width:0}
+.small{font-size:12px;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:10px 7px;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:600}
+.empty{color:var(--muted);padding:18px 4px;text-align:center}
+.actions button{margin:0;padding:6px 9px;font-size:12px}
 .footer{margin-top:22px;color:var(--muted);font-size:12px}
-@media(max-width:720px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:1fr}.wrap{padding:16px 12px 36px}table{font-size:12px}th,td{padding:8px 4px}}
+.progress{height:12px;background:#0c1728;border-radius:20px;
+overflow:hidden;margin:12px 0}
+.progress-fill{height:100%;width:0;background:var(--accent);
+border-radius:20px;transition:width .3s}
+.chart{width:100%;height:auto;display:block;min-height:160px}
+.chart-label{font-size:11px;fill:var(--muted)}
+.chart-line{fill:none;stroke:var(--blue);stroke-width:3;
+stroke-linecap:round;stroke-linejoin:round}
+.chart-dot{fill:var(--accent)}
+.chart-grid{stroke:var(--line);stroke-dasharray:4 5}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.tabs span{font-size:12px;color:var(--muted);
+padding:5px 9px;border:1px solid var(--line);border-radius:20px}
+@media(max-width:720px){
+.grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.two{grid-template-columns:1fr}
+.wrap{padding:15px 11px 35px}
+table{font-size:12px}
+th,td{padding:8px 4px}
+.brand{font-size:23px}
+}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header class="top"><div><div class="brand">My<span>Capital</span></div><div class="small">Personal investment tracker · Prototype 1.2</div></div><div class="tag">DEVELOPMENT MODE · NO MONEY MOVES</div></header>
-  <div class="notice"><strong>Important:</strong> This is a local prototype for recording and analysing figures. It is not connected to a bank or investment provider and cannot deposit, withdraw, or invest money. Your records stay in this browser on this device. Use Export backup or Copy Backup regularly and keep backup text private.</div>
 
-  <section class="grid" aria-label="Portfolio summary">
-    <div class="card"><div class="metric-label">Total contributions</div><div class="metric" id="contrib">UGX 0</div></div>
-    <div class="card"><div class="metric-label">Current investment value</div><div class="metric" id="value">UGX 0</div></div>
-    <div class="card"><div class="metric-label">Net profit / loss</div><div class="metric" id="profit">UGX 0</div><div class="small" id="returnPct">0.00% return</div></div>
-    <div class="card"><div class="metric-label">Net cash withdrawn</div><div class="metric" id="withdrawn">UGX 0</div></div>
-  </section>
-
-  <section class="section two">
-    <div class="card">
-      <h2>Record a transaction</h2>
-      <form id="txForm">
-        <label for="type">Transaction type</label>
-        <select id="type" required><option value="deposit">Deposit / contribution</option><option value="withdrawal">Withdrawal</option><option value="fee">Fee</option><option value="tax">Tax</option><option value="gain">Investment gain</option><option value="loss">Investment loss</option></select>
-        <label for="amount">Amount (UGX)</label><input id="amount" type="number" min="1" step="1" placeholder="e.g. 10000" required>
-        <label for="date">Date</label><input id="date" type="date" required>
-        <label for="note">Note / reference (optional)</label><input id="note" maxlength="100" placeholder="e.g. Monthly contribution">
-        <button type="submit">Save transaction</button>
-      </form>
-      <p class="small">Only enter confirmed transactions. Do not enter a hoped-for return as a gain.</p>
-    </div>
-    <div class="card">
-      <h2>Update investment value</h2>
-      <p class="small">Enter the latest value shown by your actual provider statement. This is a valuation, not a deposit.</p>
-      <form id="valueForm">
-        <label for="currentValue">Current investment value (UGX)</label><input id="currentValue" type="number" min="0" step="1" placeholder="e.g. 10250" required>
-        <label for="valueDate">Valuation date</label><input id="valueDate" type="date" required>
-        <button type="submit">Save valuation</button>
-      </form>
-      <div class="small" id="valuationInfo">No provider valuation recorded yet.</div>
-      <button class="secondary" id="demoBtn" type="button">Load clearly labelled demo data</button>
-      <div class="small" style="margin-top:10px">Demo records can only be cleared when the ledger contains demo records only. Real records are protected from this shortcut.</div>
-    </div>
-  </section>
-
-  <section class="section card">
-    <h2>Backup and restore</h2>
-    <p class="small">Export a complete backup file to keep a copy of your transactions, valuation and change history. Restore a backup on this device or another browser running MyCapital.</p>
-    <div class="row">
-      <button id="exportBtn" type="button">Export backup file</button>
-      <button class="secondary" id="importBtn" type="button">Restore from file</button>
-    </div>
-    <div class="row">
-      <button id="copyBackupBtn" type="button">Copy Backup</button>
-      <button class="secondary" id="restoreTextBtn" type="button">Paste Backup into MyCapital</button>
-    </div>
-    <label for="backupText">Backup text (copy it here, or paste a backup here on Chrome)</label>
-    <textarea id="backupText" rows="7" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="Tap Copy Backup in Phoenix, then paste the copied text here in Chrome." style="width:100%;padding:11px;background:#0c1728;color:var(--text);border:1px solid var(--line);border-radius:9px;font:12px/1.45 ui-monospace,monospace;resize:vertical"></textarea>
-    <input id="importFile" type="file" accept="application/json,.json" hidden>
-    <div id="backupInfo" class="small" style="margin-top:8px">Copy Backup transfers records as text without downloading a file. Keep backup text private.</div>
-  </section>
-
-  <section class="section card">
-    <h2>Transaction ledger</h2>
-    <div class="small">Deposits are kept separate from investment gains. Fees and taxes reduce performance.</div>
-    <div style="overflow-x:auto;margin-top:10px"><table><thead><tr><th>Date</th><th>Type</th><th>Note</th><th>Amount</th><th></th></tr></thead><tbody id="ledger"></tbody></table></div>
-    <div id="empty" class="empty">No transactions yet. You can explore with demo data, or wait until you have real transactions.</div>
-  </section>
-
-  <section class="section card">
-    <h2>Change history</h2>
-    <p class="small">New records, corrections, valuation changes, backup restores and demo-data clearing are logged here. Corrections add a reversing entry; they do not erase the original transaction.</p>
-    <div style="overflow-x:auto;margin-top:10px"><table><thead><tr><th>When</th><th>Action</th><th>Details</th></tr></thead><tbody id="history"></tbody></table></div>
-    <div id="historyEmpty" class="empty">No changes recorded yet.</div>
-  </section>
-  <div class="footer">Prototype 1.2: data remains on this device unless you export it. This is not a bank, wallet or investment provider. Keep backup files private. No investment transactions are executed by this app.</div>
+<header class="top">
+<div>
+<div class="brand">My<span>Capital</span></div>
+<div class="small">Personal investment tracker · Prototype 1.3</div>
 </div>
-<script>
-(() => {
-  // Keep the original keys so the records already entered in Prototype 1.0 remain available.
-  const KEY='mycapital_v1_transactions', VALUE_KEY='mycapital_v1_valuation';
-  const HISTORY_KEY='mycapital_v1_history';
-  const $=id=>document.getElementById(id);
-  const money=n=>'UGX '+Math.round(n).toLocaleString('en-US');
-  const today=new Date().toISOString().slice(0,10);
-  let transactions=read(KEY,[]);
-  let valuation=read(VALUE_KEY,null);
-  let history=read(HISTORY_KEY,[]);
-  $('date').value=today;$('valueDate').value=today;
+<div class="tag">DEVELOPMENT MODE · NO MONEY MOVES</div>
+</header>
 
-  function read(key,fallback){try{const v=localStorage.getItem(key);return v?JSON.parse(v):fallback;}catch(e){return fallback;}}
-  function stamp(){return new Date().toISOString();}
-  function log(action,details){history.unshift({at:stamp(),action,details});if(history.length>500)history=history.slice(0,500);}
-  function persist(){localStorage.setItem(KEY,JSON.stringify(transactions));localStorage.setItem(VALUE_KEY,JSON.stringify(valuation));localStorage.setItem(HISTORY_KEY,JSON.stringify(history));render();}
-  function effectiveTotals(){
-    const sums={deposit:0,withdrawal:0,fee:0,tax:0,gain:0,loss:0};
-    for(const x of transactions){
-      if(x.type==='correction' && sums.hasOwnProperty(x.reversesType)) sums[x.reversesType]-=Number(x.amount)||0;
-      else if(sums.hasOwnProperty(x.type)) sums[x.type]+=Number(x.amount)||0;
-    }
-    return sums;
-  }
-  function totals(){
-    const s=effectiveTotals(), deposits=s.deposit, withdrawals=s.withdrawal, fees=s.fee, taxes=s.tax, gains=s.gain, losses=s.loss;
-    const current=valuation?Number(valuation.amount):Math.max(0,deposits-withdrawals-fees-taxes+gains-losses);
-    const netProfit=current+withdrawals-deposits;
-    return {deposits,withdrawals,fees,taxes,gains,losses,current,netProfit,returnPct:deposits?netProfit/deposits*100:0};
-  }
-  function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-  function render(){
-    const t=totals();
-    $('contrib').textContent=money(t.deposits);$('value').textContent=money(t.current);$('profit').textContent=money(t.netProfit);
-    $('profit').className='metric '+(t.netProfit>0?'positive':t.netProfit<0?'negative':'');
-    $('returnPct').textContent=t.returnPct.toFixed(2)+'% simple return against contributions';
-    $('withdrawn').textContent=money(t.withdrawals);
-    $('valuationInfo').textContent=valuation?'Latest provider valuation: '+money(valuation.amount)+' on '+valuation.date+'.':'No provider valuation recorded yet.';
-    $('ledger').innerHTML=transactions.slice().sort((a,b)=>b.date.localeCompare(a.date)).map(x=>{
-      const label=x.type==='correction'?'Correction · reverses '+x.reversesType:x.type;
-      const note=x.type==='correction'?(x.note||'Correction entry')+' (original kept)':(x.note||'—');
-      const canReverse=x.type!=='correction'&&!x.reversedBy;
-      return `<tr><td>${escapeHtml(x.date)}</td><td>${escapeHtml(label)}</td><td>${escapeHtml(note)}</td><td>${money(x.amount)}</td><td class="actions">${canReverse?`<button class="danger" data-reverse="${escapeHtml(x.id)}" type="button">Reverse</button>`:''}</td></tr>`;
-    }).join('');
-    $('empty').style.display=transactions.length?'none':'block';
-    $('history').innerHTML=history.map(h=>`<tr><td>${escapeHtml(new Date(h.at).toLocaleString())}</td><td>${escapeHtml(h.action)}</td><td>${escapeHtml(h.details)}</td></tr>`).join('');
-    $('historyEmpty').style.display=history.length?'none':'block';
-  }
-  $('txForm').addEventListener('submit',e=>{
-    e.preventDefault();const amount=Number($('amount').value),type=$('type').value;
-    if(!Number.isFinite(amount)||amount<=0)return alert('Enter a valid amount greater than zero.');
-    if(type==='withdrawal'&&amount>totals().current)return alert('This withdrawal is greater than the currently recorded value. Check your figures first.');
-    const tx={id:crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2),type,amount,date:$('date').value,note:$('note').value.trim()};
-    transactions.push(tx);log('Transaction added',`${type}: ${money(amount)} on ${tx.date}${tx.note?' — '+tx.note:''}`);persist();e.target.reset();$('date').value=today;
-  });
-  $('valueForm').addEventListener('submit',e=>{
-    e.preventDefault();const amount=Number($('currentValue').value);
-    if(!Number.isFinite(amount)||amount<0)return alert('Enter a valid valuation.');
-    const previous=valuation;valuation={amount,date:$('valueDate').value};
-    log('Valuation updated',`${money(amount)} on ${valuation.date}${previous?` (previously ${money(previous.amount)} on ${previous.date})`:''}`);
-    persist();e.target.reset();$('valueDate').value=today;
-  });
-  $('ledger').addEventListener('click',e=>{
-    const id=e.target.dataset.reverse;if(!id)return;
-    const original=transactions.find(x=>x.id===id);if(!original||original.type==='correction'||original.reversedBy)return;
-    if(!confirm(`Add a correction reversing ${original.type} of ${money(original.amount)}? The original will remain visible and totals will be adjusted.`))return;
-    const reversal={id:crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2),type:'correction',reversesType:original.type,amount:original.amount,date:today,note:`Reversal of transaction ${original.id}`,correctionOf:original.id};
-    original.reversedBy=reversal.id;transactions.push(reversal);
-    log('Transaction reversed',`${original.type}: ${money(original.amount)}; original entry retained (${original.id})`);
-    persist();
-  });
-  $('demoBtn').addEventListener('click',()=>{
-    if(transactions.length||valuation){if(!confirm('Replace the current records with fictional demo data? Export a backup first if you want to keep them.'))return;}
-    transactions=[
-      {id:'demo1',type:'deposit',amount:10000,date:today,note:'DEMO ONLY — starting contribution'},
-      {id:'demo2',type:'fee',amount:100,date:today,note:'DEMO ONLY — example fee'}
-    ];valuation={amount:10150,date:today};history=[];
-    log('Demo data loaded','Replaced local records with clearly labelled fictional demo figures.');
-    persist();alert('Demo data loaded. These figures are fictional and are not investment results.');
-  });
-  function makeBackup(){
-    return {app:'MyCapital',formatVersion:1,exportedAt:stamp(),transactions,valuation,history};
-  }
-  function validateBackup(data){
-    if(!data||data.app!=='MyCapital'||data.formatVersion!==1||!Array.isArray(data.transactions)||!Array.isArray(data.history)||!(data.valuation===null||typeof data.valuation==='object'))throw new Error('This does not look like a valid MyCapital backup.');
-    if(!data.transactions.every(x=>x&&typeof x.id==='string'&&typeof x.type==='string'&&Number.isFinite(Number(x.amount))&&typeof x.date==='string'))throw new Error('The backup contains an invalid transaction.');
-    if(data.valuation!==null&&(!Number.isFinite(Number(data.valuation.amount))||typeof data.valuation.date!=='string'))throw new Error('The backup valuation is invalid.');
-    return data;
-  }
-  function restoreBackup(data,source){
-    validateBackup(data);
-    if(!confirm(`Restore backup with ${data.transactions.length} transactions? This will replace the records currently in this browser. Make a backup of current records first if you need them.`))return false;
-    transactions=data.transactions;valuation=data.valuation;history=data.history;
-    log('Backup restored',`Restored ${transactions.length} transactions from ${source}.`);
-    persist();$('backupInfo').textContent=`Backup restored successfully: ${transactions.length} transactions and ${history.length} history records.`;
-    return true;
-  }
-  $('exportBtn').addEventListener('click',()=>{
-    log('Backup exported',`${transactions.length} transactions and ${history.length} history records included.`);persist();
-    const blob=new Blob([JSON.stringify(makeBackup(),null,2)],{type:'application/json'});
-    const url=URL.createObjectURL(blob),a=document.createElement('a');
-    a.href=url;a.download='mycapital-backup-'+today+'.json';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
-    $('backupInfo').textContent='Backup export started. Check your device Downloads folder and keep the file private.';
-  });
-  $('copyBackupBtn').addEventListener('click',async()=>{
-    log('Backup copied',`${transactions.length} transactions and ${history.length} history records included.`);persist();
-    const backupText=JSON.stringify(makeBackup(),null,2);
-    $('backupText').value=backupText;
-    try{
-      if(navigator.clipboard&&navigator.clipboard.writeText){
-        await navigator.clipboard.writeText(backupText);
-        $('backupInfo').textContent=`Backup copied. ${transactions.length} transactions and ${history.length} history records included. Open MyCapital in Chrome and paste into the Backup text box.`;
-      }else{
-        $('backupText').focus();$('backupText').select();
-        const copied=document.execCommand('copy');
-        $('backupInfo').textContent=copied?'Backup copied. Open MyCapital in Chrome and paste it into the Backup text box.':'Backup text is selected. Choose Copy from your phone menu, then paste it into Chrome.';
-      }
-    }catch(err){
-      $('backupText').focus();$('backupText').select();
-      $('backupInfo').textContent='Automatic copying was blocked. The backup text is selected; choose Copy from your phone menu, then paste it into Chrome.';
-    }
-  });
-  $('restoreTextBtn').addEventListener('click',()=>{
-    try{
-      const data=JSON.parse($('backupText').value.trim());
-      restoreBackup(data,'pasted text backup');
-    }catch(err){alert('Could not restore pasted backup: '+err.message);}
-  });
-  $('importBtn').addEventListener('click',()=>$('importFile').click());
-  $('importFile').addEventListener('change',async e=>{
-    const file=e.target.files&&e.target.files[0];if(!file)return;
-    try{
-      const data=JSON.parse(await file.text());
-      restoreBackup(data,file.name);
-    }catch(err){alert('Could not restore backup: '+err.message);}
-    finally{e.target.value='';}
-  });
+<div class="notice">
+<strong>Important:</strong> MyCapital is a personal record-keeping prototype.
+It is not connected to a bank or investment provider and cannot move or invest money.
+Your records remain in this browser on this device.
+Export backups regularly and keep backup text private.
+</div>
+
+<div class="tabs">
+<span>Portfolio</span><span>Performance</span>
+<span>Monthly reports</span><span>Investment goals</span>
+</div>
+
+<section class="grid">
+<div class="card">
+<div class="metric-label">Total contributions</div>
+<div class="metric" id="contrib">UGX 0</div>
+</div>
+<div class="card">
+<div class="metric-label">Current investment value</div>
+<div class="metric" id="value">UGX 0</div>
+</div>
+<div class="card">
+<div class="metric-label">Net profit / loss</div>
+<div class="metric" id="profit">UGX 0</div>
+<div class="small" id="returnPct">0.00% return</div>
+</div>
+<div class="card">
+<div class="metric-label">Net cash withdrawn</div>
+<div class="metric" id="withdrawn">UGX 0</div>
+</div>
+</section>
+
+<section class="section card">
+<h2>Portfolio performance</h2>
+<p class="small">Your recorded investment valuations over time.</p>
+<div id="chartArea">
+<div class="empty">Your performance chart will appear after you record valuations.</div>
+</div>
+<div class="row">
+<div>
+<div class="small">Total fees</div>
+<strong id="feesTotal">UGX 0</strong>
+</div>
+<div>
+<div class="small">Total taxes</div>
+<strong id="taxTotal">UGX 0</strong>
+</div>
+<div>
+<div class="small">Recorded gains</div>
+<strong id="gainsTotal">UGX 0</strong>
+</div>
+</div>
+</section>
+
+<section class="section two">
+<div class="card">
+<h2>Record a transaction</h2>
+<form id="txForm">
+<label for="type">Transaction type</label>
+<select id="type" required>
+<option value="deposit">Deposit / contribution</option>
+<option value="withdrawal">Withdrawal</option>
+<option value="fee">Fee</option>
+<option value="tax">Tax</option>
+<option value="gain">Investment gain</option>
+<option value="loss">Investment loss</option>
+</select>
+
+<label for="amount">Amount (UGX)</label>
+<input id="amount" type="number" min="1" step="1"
+placeholder="e.g. 10000" required>
+
+<label for="date">Date</label>
+<input id="date" type="date" required>
+
+<label for="note">Note / reference</label>
+<input id="note" maxlength="100"
+placeholder="e.g. Monthly contribution">
+
+<button type="submit">Save transaction</button>
+</form>
+<p class="small">Only enter confirmed transactions. Do not enter hoped-for returns as gains.</p>
+</div>
+
+<div class="card">
+<h2>Update investment value</h2>
+<p class="small">Enter the latest value from your actual investment provider statement.</p>
+<form id="valueForm">
+<label for="currentValue">Current investment value (UGX)</label>
+<input id="currentValue" type="number" min="0" step="1"
+placeholder="e.g. 10250" required>
+
+<label for="valueDate">Valuation date</label>
+<input id="valueDate" type="date" required>
+
+<button type="submit">Save valuation</button>
+</form>
+<div class="small" id="valuationInfo">No provider valuation recorded yet.</div>
+<button class="secondary" id="demoBtn" type="button">Load demo data</button>
+<div class="small">Demo data is fictional. Existing real records are protected from replacement.</div>
+</div>
+</section>
+
+<section class="section card">
+<h2>Investment goal tracker</h2>
+<p class="small">Set a target and monitor your progress using your current investment value.</p>
+
+<form id="goalForm">
+<label for="goalAmount">Your investment target (UGX)</label>
+<div class="row">
+<input id="goalAmount" type="number" min="1" step="1"
+placeholder="e.g. 500000" required>
+<button type="submit">Save goal</button>
+</div>
+</form>
+
+<div class="progress"><div class="progress-fill" id="goalBar"></div></div>
+<div class="row">
+<div>
+<div class="small">Current progress</div>
+<strong id="goalProgress">No goal set</strong>
+</div>
+<div>
+<div class="small">Remaining to target</div>
+<strong id="goalRemaining">—</strong>
+</div>
+</div>
+</section>
+
+<section class="section card">
+<h2>Monthly report</h2>
+<p class="small">Review the transactions recorded for a selected month.</p>
+<label for="reportMonth">Select month</label>
+<input id="reportMonth" type="month">
+<div class="grid" style="margin-top:13px">
+<div class="card">
+<div class="metric-label">Contributions</div>
+<strong id="monthDeposits">UGX 0</strong>
+</div>
+<div class="card">
+<div class="metric-label">Withdrawals</div>
+<strong id="monthWithdrawals">UGX 0</strong>
+</div>
+<div class="card">
+<div class="metric-label">Fees and taxes</div>
+<strong id="monthCosts">UGX 0</strong>
+</div>
+<div class="card">
+<div class="metric-label">Gains / losses</div>
+<strong id="monthPerformance">UGX 0</strong>
+</div>
+</div>
+<div class="small" id="reportInfo" style="margin-top:12px">Monthly report summary.</div>
+</section>
+
+<section class="section card">
+<h2>Backup and restore</h2>
+<p class="small">
+Export a complete backup containing transactions, valuation history,
+investment goal and change history. You can restore a backup on another
+browser running MyCapital.
+</p>
+<div class="row">
+<button id="exportBtn" type="button">Export backup file</button>
+<button class="secondary" id="importBtn" type="button">Restore from file</button>
+</div>
+<div class="row">
+<button id="copyBackupBtn" type="button">Copy Backup</button>
+<button class="secondary" id="restoreTextBtn" type="button">Paste Backup into MyCapital</button>
+</div>
+<label for="backupText">Backup text</label>
+<textarea id="backupText" rows="7" spellcheck="false"
+autocapitalize="off" autocomplete="off"
+placeholder="Paste your backup text here."
+style="width:100%;padding:11px;background:#0c1728;color:var(--text);
+border:1px solid var(--line);border-radius:9px;
+font:12px/1.45 monospace;resize:vertical"></textarea>
+<input id="importFile" type="file" accept="application/json,.json" hidden>
+<div id="backupInfo" class="small" style="margin-top:8px">
+Keep backup files and text private.
+</div>
+</section>
+
+<section class="section card">
+<h2>Transaction ledger</h2>
+<div class="small">Corrections add reversing entries. Original transactions remain visible.</div>
+<div style="overflow-x:auto;margin-top:10px">
+<table>
+<thead>
+<tr><th>Date</th><th>Type</th><th>Note</th><th>Amount</th><th></th></tr>
+</thead>
+<tbody id="ledger"></tbody>
+</table>
+</div>
+<div id="empty" class="empty">No transactions yet.</div>
+</section>
+
+<section class="section card">
+<h2>Change history</h2>
+<p class="small">Records additions, corrections, valuations, backup restores and demo actions.</p>
+<div style="overflow-x:auto;margin-top:10px">
+<table>
+<thead><tr><th>When</th><th>Action</th><th>Details</th></tr></thead>
+<tbody id="history"></tbody>
+</table>
+</div>
+<div id="historyEmpty" class="empty">No changes recorded yet.</div>
+</section>
+
+<div class="footer">
+MyCapital Prototype 1.3 · Local record keeping only.
+Not a bank, wallet or investment provider.
+No investment transactions are executed by this application.
+</div>
+</div>
+
+<script>
+(()=>{
+'use strict';
+
+// Original storage keys are deliberately preserved.
+const KEY='mycapital_v1_transactions';
+const VALUE_KEY='mycapital_v1_valuation';
+const HISTORY_KEY='mycapital_v1_history';
+
+// New storage keys.
+const GOAL_KEY='mycapital_v1_goal';
+const VALUATIONS_KEY='mycapital_v1_valuations';
+
+const $=id=>document.getElementById(id);
+
+const money=n=>'UGX '+Math.round(Number(n)||0).toLocaleString('en-US');
+
+function localDate(){
+ const d=new Date();
+ const y=d.getFullYear();
+ const m=String(d.getMonth()+1).padStart(2,'0');
+ const day=String(d.getDate()).padStart(2,'0');
+ return `${y}-${m}-${day}`;
+}
+
+const today=localDate();
+
+function read(key,fallback){
+ try{
+  const v=localStorage.getItem(key);
+  return v?JSON.parse(v):fallback;
+ }catch(e){
+  return fallback;
+ }
+}
+
+function stamp(){
+ return new Date().toISOString();
+}
+
+function makeId(){
+ return crypto.randomUUID?
+ crypto.randomUUID():
+ Date.now().toString(36)+Math.random().toString(36).slice(2);
+}
+
+let transactions=read(KEY,[]);
+let valuation=read(VALUE_KEY,null);
+let history=read(HISTORY_KEY,[]);
+let goal=read(GOAL_KEY,null);
+let valuations=read(VALUATIONS_KEY,[]);
+
+// Recover the previous valuation as the first chart point.
+if(!Array.isArray(valuations)) valuations=[];
+
+if(valuation&&valuations.length===0){
+ valuations.push({
+  amount:Number(valuation.amount),
+  date:valuation.date
+ });
+}
+
+if(!Array.isArray(transactions)) transactions=[];
+if(!Array.isArray(history)) history=[];
+
+$('date').value=today;
+$('valueDate').value=today;
+$('reportMonth').value=today.slice(0,7);
+
+if(goal&&Number.isFinite(Number(goal))){
+ $('goalAmount').value=goal;
+}
+
+function log(action,details){
+ history.unshift({
+  at:stamp(),
+  action,
+  details
+ });
+ if(history.length>500) history=history.slice(0,500);
+}
+
+function persist(){
+ try{
+  localStorage.setItem(KEY,JSON.stringify(transactions));
+  localStorage.setItem(VALUE_KEY,JSON.stringify(valuation));
+  localStorage.setItem(HISTORY_KEY,JSON.stringify(history));
+  localStorage.setItem(GOAL_KEY,JSON.stringify(goal));
+  localStorage.setItem(VALUATIONS_KEY,JSON.stringify(valuations));
   render();
+ }catch(e){
+  alert('Could not save records. Your browser storage may be full. Export a backup and check available device storage.');
+ }
+}
+
+function effectiveTotals(){
+ const sums={
+  deposit:0,withdrawal:0,fee:0,tax:0,gain:0,loss:0
+ };
+
+ for(const x of transactions){
+  if(x.type==='correction'&&
+     Object.prototype.hasOwnProperty.call(sums,x.reversesType)){
+   sums[x.reversesType]-=Number(x.amount)||0;
+  }else if(Object.prototype.hasOwnProperty.call(sums,x.type)){
+   sums[x.type]+=Number(x.amount)||0;
+  }
+ }
+ return sums;
+}
+
+function totals(){
+ const s=effectiveTotals();
+ const deposits=s.deposit;
+ const withdrawals=s.withdrawal;
+ const current=valuation?
+ Number(valuation.amount):
+ Math.max(0,deposits-withdrawals-s.fee-s.tax+s.gain-s.loss);
+
+ const netProfit=current+withdrawals-deposits;
+
+ return {
+  deposits,withdrawals,fees:s.fee,taxes:s.tax,
+  gains:s.gain,losses:s.loss,current,netProfit,
+  returnPct:deposits?netProfit/deposits*100:0
+ };
+}
+
+function escapeHtml(s){
+ return String(s??'').replace(/[&<>"']/g,c=>({
+  '&':'&amp;','<':'&lt;','>':'&gt;',
+  '"':'&quot;',"'":'&#39;'
+ }[c]));
+}
+
+function renderChart(){
+ const area=$('chartArea');
+ const points=valuations
+  .filter(v=>Number.isFinite(Number(v.amount))&&v.date)
+  .slice()
+  .sort((a,b)=>a.date.localeCompare(b.date));
+
+ if(points.length===0){
+  area.innerHTML='<div class="empty">Your performance chart will appear after you record valuations.</div>';
+  return;
+ }
+
+ const data=points.length===1?
+ [...points,...points]:points;
+
+ const width=650,height=220;
+ const left=48,right=18,top=20,bottom=36;
+ const values=data.map(v=>Number(v.amount));
+ const min=Math.min(...values);
+ const max=Math.max(...values);
+ const spread=max-min||1;
+
+ const coords=data.map((v,i)=>{
+  const x=left+i*(width-left-right)/Math.max(1,data.length-1);
+  const y=top+(max-Number(v.amount))/spread*(height-top-bottom);
+  return {x,y,value:Number(v.amount),date:v.date};
+ });
+
+ const path=coords.map((p,i)=>
+  `${i?'L':'M'} ${p.x} ${p.y}`
+ ).join(' ');
+
+ const dots=coords.map(p=>
+  `<circle class="chart-dot" cx="${p.x}" cy="${p.y}" r="4">
+  <title>${escapeHtml(p.date)}: ${escapeHtml(money(p.value))}</title></circle>`
+ ).join('');
+
+ const first=coords[0];
+ const last=coords[coords.length-1];
+
+ area.innerHTML=`
+ <svg class="chart" viewBox="0 0 ${width} ${height}" role="img"
+ aria-label="Investment valuation history chart">
+ <line class="chart-grid" x1="${left}" y1="${top}"
+ x2="${width-right}" y2="${top}"/>
+ <line class="chart-grid" x1="${left}" y1="${height-bottom}"
+ x2="${width-right}" y2="${height-bottom}"/>
+ <text class="chart-label" x="3" y="${top+4}">${escapeHtml(money(max))}</text>
+ <text class="chart-label" x="3" y="${height-bottom}">${escapeHtml(money(min))}</text>
+ <path class="chart-line" d="${path}"/>
+ ${dots}
+ <text class="chart-label" x="${left}" y="${height-8}">${escapeHtml(first.date)}</text>
+ <text class="chart-label" x="${width-right}" y="${height-8}" text-anchor="end">${escapeHtml(last.date)}</text>
+ </svg>
+ <div class="small">Showing ${points.length} recorded valuation${points.length===1?'':'s'}.</div>
+ `;
+}
+
+function renderGoal(t){
+ const bar=$('goalBar');
+
+ if(!goal||Number(goal)<=0){
+  $('goalProgress').textContent='No goal set';
+  $('goalRemaining').textContent='—';
+  bar.style.width='0%';
+  return;
+ }
+
+ const target=Number(goal);
+ const percentage=t.current/target*100;
+ const remaining=Math.max(0,target-t.current);
+
+ bar.style.width=Math.min(100,Math.max(0,percentage))+'%';
+ $('goalProgress').textContent=percentage.toFixed(1)+'% of target';
+ $('goalRemaining').textContent=money(remaining);
+}
+
+function renderMonthly(){
+ const month=$('reportMonth').value;
+ const filtered=transactions.filter(x=>
+  typeof x.date==='string'&&x.date.slice(0,7)===month
+ );
+
+ const sums={
+  deposit:0,withdrawal:0,fee:0,tax:0,gain:0,loss:0
+ };
+
+ for(const x of filtered){
+  if(x.type==='correction'&&
+  Object.prototype.hasOwnProperty.call(sums,x.reversesType)){
+   sums[x.reversesType]-=Number(x.amount)||0;
+  }else if(Object.prototype.hasOwnProperty.call(sums,x.type)){
+   sums[x.type]+=Number(x.amount)||0;
+  }
+ }
+
+ $('monthDeposits').textContent=money(sums.deposit);
+ $('monthWithdrawals').textContent=money(sums.withdrawal);
+ $('monthCosts').textContent=money(sums.fee+sums.tax);
+ $('monthPerformance').textContent=money(sums.gain-sums.loss);
+
+ $('reportInfo').textContent=
+ `${filtered.length} ledger entries recorded in ${month||'the selected month'}.`;
+}
+
+function render(){
+ const t=totals();
+
+ $('contrib').textContent=money(t.deposits);
+ $('value').textContent=money(t.current);
+ $('profit').textContent=money(t.netProfit);
+ $('profit').className='metric '+
+ (t.netProfit>0?'positive':t.netProfit<0?'negative':'');
+
+ $('returnPct').textContent=
+ t.returnPct.toFixed(2)+'% simple return against contributions';
+
+ $('withdrawn').textContent=money(t.withdrawals);
+ $('feesTotal').textContent=money(t.fees);
+ $('taxTotal').textContent=money(t.taxes);
+ $('gainsTotal').textContent=money(t.gains-t.losses);
+
+ $('valuationInfo').textContent=valuation?
+ 'Latest provider valuation: '+money(valuation.amount)+
+ ' on '+valuation.date+'.':
+ 'No provider valuation recorded yet.';
+
+ $('ledger').innerHTML=transactions.slice()
+ .sort((a,b)=>b.date.localeCompare(a.date))
+ .map(x=>{
+  const label=x.type==='correction'?
+  'Correction · reverses '+x.reversesType:x.type;
+
+  const note=x.type==='correction'?
+  (x.note||'Correction entry')+' (original kept)':
+  (x.note||'—');
+
+  const canReverse=x.type!=='correction'&&!x.reversedBy;
+
+  return `<tr>
+  <td>${escapeHtml(x.date)}</td>
+  <td>${escapeHtml(label)}</td>
+  <td>${escapeHtml(note)}</td>
+  <td>${money(x.amount)}</td>
+  <td class="actions">${canReverse?
+  `<button class="danger" data-reverse="${escapeHtml(x.id)}" type="button">Reverse</button>`:''}</td>
+  </tr>`;
+ }).join('');
+
+ $('empty').style.display=transactions.length?'none':'block';
+
+ $('history').innerHTML=history.map(h=>`
+ <tr>
+ <td>${escapeHtml(new Date(h.at).toLocaleString())}</td>
+ <td>${escapeHtml(h.action)}</td>
+ <td>${escapeHtml(h.details)}</td>
+ </tr>`).join('');
+
+ $('historyEmpty').style.display=history.length?'none':'block';
+
+ renderGoal(t);
+ renderChart();
+ renderMonthly();
+}
+
+// Transaction recording.
+$('txForm').addEventListener('submit',e=>{
+ e.preventDefault();
+
+ const amount=Number($('amount').value);
+ const type=$('type').value;
+ const date=$('date').value;
+
+ if(!Number.isFinite(amount)||amount<=0)
+  return alert('Enter a valid amount greater than zero.');
+
+ if(!date) return alert('Select a transaction date.');
+
+ if(type==='withdrawal'&&amount>totals().current)
+  return alert('This withdrawal is greater than the currently recorded value. Check your figures first.');
+
+ const tx={
+  id:makeId(),
+  type,amount,date,
+  note:$('note').value.trim()
+ };
+
+ transactions.push(tx);
+
+ log('Transaction added',
+ `${type}: ${money(amount)} on ${date}${tx.note?' — '+tx.note:''}`);
+
+ persist();
+ e.target.reset();
+ $('date').value=today;
+});
+
+// Valuation recording.
+$('valueForm').addEventListener('submit',e=>{
+ e.preventDefault();
+
+ const amount=Number($('currentValue').value);
+ const date=$('valueDate').value;
+
+ if(!Number.isFinite(amount)||amount<0)
+  return alert('Enter a valid valuation.');
+
+ if(!date) return alert('Select a valuation date.');
+
+ valuation={amount,date};
+
+ valuations.push({amount,date});
+ valuations.sort((a,b)=>a.date.localeCompare(b.date));
+
+ log('Valuation updated',
+ `${money(amount)} on ${date}`);
+
+ persist();
+ e.target.reset();
+ $('valueDate').value=today;
+});
+
+// Investment goal.
+$('goalForm').addEventListener('submit',e=>{
+ e.preventDefault();
+
+ const amount=Number($('goalAmount').value);
+
+ if(!Number.isFinite(amount)||amount<=0)
+  return alert('Enter a valid goal greater than zero.');
+
+ goal=amount;
+
+ log('Investment goal updated',
+ 'New target: '+money(goal));
+
+ persist();
+});
+
+// Monthly report.
+$('reportMonth').addEventListener('change',renderMonthly);
+
+// Transaction corrections.
+$('ledger').addEventListener('click',e=>{
+ const id=e.target.dataset.reverse;
+ if(!id)return;
+
+ const original=transactions.find(x=>x.id===id);
+
+ if(!original||original.type==='correction'||original.reversedBy)return;
+
+ if(!confirm(
+ `Add a correction reversing ${original.type} of ${money(original.amount)}? The original will remain visible.`
+ ))return;
+
+ const reversal={
+  id:makeId(),
+  type:'correction',
+  reversesType:original.type,
+  amount:original.amount,
+  date:today,
+  note:`Reversal of transaction ${original.id}`,
+  correctionOf:original.id
+ };
+
+ original.reversedBy=reversal.id;
+ transactions.push(reversal);
+
+ log('Transaction reversed',
+ `${original.type}: ${money(original.amount)}; original entry retained.`);
+
+ persist();
+});
+
+// Demo records are blocked when real records exist.
+$('demoBtn').addEventListener('click',()=>{
+ const demoOnly=transactions.length>0&&
+ transactions.every(x=>
+  typeof x.note==='string'&&x.note.startsWith('DEMO ONLY')
+ );
+
+ const hasRealRecords=transactions.length>0&&!demoOnly;
+
+ if(hasRealRecords){
+  alert('Demo data is blocked because this ledger contains records that are not labelled as demo data. Your records have not been changed.');
+  return;
+ }
+
+ if(valuation&&!demoOnly&&transactions.length===0){
+  alert('A valuation already exists. Your records have not been changed. Export a backup before making any changes.');
+  return;
+ }
+
+ if(transactions.length&&!confirm('Replace the existing demo records with fresh fictional demo figures?'))return;
+
+ transactions=[
+  {id:'demo1',type:'deposit',amount:10000,date:today,note:'DEMO ONLY — starting contribution'},
+  {id:'demo2',type:'fee',amount:100,date:today,note:'DEMO ONLY — example fee'}
+ ];
+
+ valuation={amount:10150,date:today};
+ valuations=[{amount:10150,date:today}];
+ history=[];
+
+ log('Demo data loaded',
+ 'Fictional demonstration figures loaded.');
+
+ persist();
+
+ alert('Demo data loaded. These figures are fictional, not actual investment results.');
+});
+
+// Backup creation.
+function makeBackup(){
+ return {
+  app:'MyCapital',
+  formatVersion:2,
+  exportedAt:stamp(),
+  transactions,
+  valuation,
+  valuations,
+  goal,
+  history
+ };
+}
+
+function validateBackup(data){
+ if(!data||data.app!=='MyCapital'||
+ ![1,2].includes(data.formatVersion)||
+ !Array.isArray(data.transactions)||
+ !Array.isArray(data.history)||
+ !(data.valuation===null||typeof data.valuation==='object')){
+  throw new Error('This does not look like a valid MyCapital backup.');
+ }
+
+ if(!data.transactions.every(x=>
+ x&&typeof x.id==='string'&&
+ typeof x.type==='string'&&
+ Number.isFinite(Number(x.amount))&&
+ typeof x.date==='string')){
+  throw new Error('The backup contains an invalid transaction.');
+ }
+
+ if(data.valuation!==null&&
+ (!Number.isFinite(Number(data.valuation.amount))||
+ typeof data.valuation.date!=='string')){
+  throw new Error('The backup valuation is invalid.');
+ }
+
+ if(data.valuations!==undefined&&
+ (!Array.isArray(data.valuations)||
+ !data.valuations.every(v=>
+ v&&Number.isFinite(Number(v.amount))&&
+ typeof v.date==='string'))){
+  throw new Error('The valuation history is invalid.');
+ }
+
+ if(data.goal!==undefined&&data.goal!==null&&
+ (!Number.isFinite(Number(data.goal))||Number(data.goal)<=0)){
+  throw new Error('The investment goal is invalid.');
+ }
+
+ return data;
+}
+
+function restoreBackup(data,source){
+ validateBackup(data);
+
+ if(!confirm(
+ `Restore backup with ${data.transactions.length} transactions? This will replace the records currently in this browser. Export current records first if you need them.`
+ ))return false;
+
+ transactions=data.transactions;
+ valuation=data.valuation;
+ history=data.history;
+
+ valuations=Array.isArray(data.valuations)?
+ data.valuations.slice():
+ (valuation?[{amount:Number(valuation.amount),date:valuation.date}]:[]);
+
+ goal=data.goal??null;
+
+ log('Backup restored',
+ `Restored ${transactions.length} transactions from ${source}.`);
+
+ persist();
+
+ $('goalAmount').value=goal||'';
+
+ $('backupInfo').textContent=
+ `Backup restored: ${transactions.length} transactions and ${history.length} history records.`;
+
+ return true;
+}
+
+// File export.
+$('exportBtn').addEventListener('click',()=>{
+ log('Backup exported',
+ `${transactions.length} transactions and ${history.length} history records included.`);
+
+ persist();
+
+ const blob=new Blob(
+ [JSON.stringify(makeBackup(),null,2)],
+ {type:'application/json'}
+ );
+
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement('a');
+
+ a.href=url;
+ a.download='mycapital-backup-'+today+'.json';
+
+ document.body.appendChild(a);
+ a.click();
+ a.remove();
+
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+
+ $('backupInfo').textContent=
+ 'Backup export started. Check your Downloads folder and keep the file private.';
+});
+
+// Copy backup.
+$('copyBackupBtn').addEventListener('click',async()=>{
+ log('Backup copied',
+ `${transactions.length} transactions and ${history.length} history records included.`);
+
+ persist();
+
+ const backupText=JSON.stringify(makeBackup(),null,2);
+ $('backupText').value=backupText;
+
+ try{
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+   await navigator.clipboard.writeText(backupText);
+
+   $('backupInfo').textContent=
+   'Backup copied. Open MyCapital in Chrome and paste into the backup text box.';
+  }else{
+   $('backupText').focus();
+   $('backupText').select();
+
+   const copied=document.execCommand('copy');
+
+   $('backupInfo').textContent=copied?
+   'Backup copied. Paste it into the other MyCapital browser.':
+   'Backup text selected. Use your phone menu to Copy it.';
+  }
+ }catch(err){
+  $('backupText').focus();
+  $('backupText').select();
+
+  $('backupInfo').textContent=
+  'Automatic copying was blocked. Use your phone menu to Copy the selected backup text.';
+ }
+});
+
+// Text restore.
+$('restoreTextBtn').addEventListener('click',()=>{
+ try{
+  const data=JSON.parse($('backupText').value.trim());
+
+  if(!restoreBackup(data,'pasted text backup'))return;
+ }catch(err){
+  alert('Could not restore pasted backup: '+err.message);
+ }
+});
+
+// File import.
+$('importBtn').addEventListener('click',()=>$('importFile').click());
+
+$('importFile').addEventListener('change',async e=>{
+ const file=e.target.files&&e.target.files[0];
+ if(!file)return;
+
+ try{
+  const data=JSON.parse(await file.text());
+  restoreBackup(data,file.name);
+ }catch(err){
+  alert('Could not restore backup: '+err.message);
+ }finally{
+  e.target.value='';
+ }
+});
+
+render();
+
 })();
 </script>
 </body>
