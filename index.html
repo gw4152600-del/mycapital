@@ -1,4 +1,5 @@
 
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -51,6 +52,7 @@ textarea:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .row>*{flex:1;min-width:0}
 .small{font-size:12px;color:var(--muted)}
+.transaction-guidance{margin:12px 0 0;padding:10px 12px;border:1px solid var(--line);border-left:3px solid var(--blue);border-radius:9px;background:#0c1728;color:var(--muted);font-size:12px;line-height:1.5}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th,td{text-align:left;padding:10px 7px;border-bottom:1px solid var(--line)}
 th{color:var(--muted);font-weight:600}
@@ -100,7 +102,7 @@ html{scroll-behavior:auto}.progress-fill{transition:none}
 <header class="top">
 <div>
 <div class="brand">My<span>Capital</span></div>
-<div class="small">Personal investment tracker · Prototype 1.6</div>
+<div class="small">Personal investment tracker · Prototype 1.7</div>
 </div>
 <div class="tag">DEVELOPMENT MODE · NO MONEY MOVES</div>
 </header>
@@ -108,7 +110,7 @@ html{scroll-behavior:auto}.progress-fill{transition:none}
 <div class="notice">
 <strong>Important:</strong> MyCapital is a personal record-keeping prototype.
 It is not connected to a bank or investment provider and cannot move or invest money.
-Your records remain in this browser on this device. Prototype 1.6 uses separate storage from Prototype 1.5 and does not automatically import its records. Browser storage is not encrypted by this prototype.
+Your records remain in this browser on this device. Prototype 1.7 keeps the same saved-record storage keys as Prototype 1.6, so it can continue using your existing 1.6 records. It does not automatically import Prototype 1.5 records. Browser storage is not encrypted by this prototype.
 Export backups regularly and keep backup text private.
 </div>
 
@@ -168,8 +170,9 @@ aria-current="location">Portfolio</button>
 <input id="date" type="date" required>
 <label for="note">Note / reference</label>
 <input id="note" maxlength="100" placeholder="e.g. Monthly contribution">
-<button type="submit">Save transaction</button>
+<button id="saveTxButton" type="submit">Save transaction</button>
 </form>
+<div class="transaction-guidance">Duplicate check: before saving, MyCapital looks for an existing entry with the same type, amount and date. If it finds one, it will ask you to review it. Separate genuine transactions are still allowed after confirmation.</div>
 <p class="small">Only enter confirmed transactions. Do not enter hoped-for returns as gains.</p>
 </div>
 
@@ -261,7 +264,7 @@ style="font:12px/1.45 monospace;resize:vertical"></textarea>
 </section>
 
 <div class="footer">
-MyCapital Prototype 1.6 · Local record keeping only.
+MyCapital Prototype 1.7 · Local record keeping only.
 Not a bank, wallet or investment provider.
 No investment transactions are executed by this application.
 </div>
@@ -301,7 +304,7 @@ function validDate(value){
 }
 
 
-// Prototype 1.6 uses its own storage namespace and checks raw data before parsing.
+// Prototype 1.7 preserves the 1.6 storage namespace and checks raw data before parsing.
 // If a stored value is malformed, stop before any normal app code can overwrite it.
 const rawStartup={};
 const startupProblems=[];
@@ -354,14 +357,14 @@ if(!startupProblems.length){
 }
 if(startupProblems.length){
  document.body.innerHTML=`<main style="max-width:760px;margin:30px auto;padding:20px;color:#eef4ff;font:15px/1.6 system-ui;background:#0b1220;min-height:100vh">
- <h1 style="color:#ffb4b4">MyCapital 1.6 — Recovery protection active</h1>
+ <h1 style="color:#ffb4b4">MyCapital 1.7 — Recovery protection active</h1>
  <p>MyCapital found data that it cannot safely read. The app has stopped normal startup to prevent accidental overwriting. No saved values have been changed by this recovery screen.</p>
  <p><strong>Items needing attention:</strong></p><ul>${startupProblems.map(x=>'<li>'+x.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))+'</li>').join('')}</ul>
  <p>Download a raw recovery snapshot before attempting repairs. Keep it private and do not delete your original Prototype 1.5 backup.</p>
  <button id="rawExport" style="padding:12px 16px;border:0;border-radius:8px;background:#62d6a5;font-weight:bold">Download raw recovery snapshot</button>
  <p style="color:#a9b8ce;font-size:13px">This mode is read-only. It does not attempt automatic repair or migration.</p></main>`;
  document.getElementById('rawExport').addEventListener('click',()=>{
-  const payload={app:'MyCapital',prototype:'1.6',kind:'raw-local-storage-recovery',exportedAt:new Date().toISOString(),problems:startupProblems,rawStorage:rawStartup};
+  const payload={app:'MyCapital',prototype:'1.7',kind:'raw-local-storage-recovery',exportedAt:new Date().toISOString(),problems:startupProblems,rawStorage:rawStartup};
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);const a=document.createElement('a');
   a.href=url;a.download='mycapital-raw-recovery-'+new Date().toISOString().slice(0,10)+'.json';
@@ -656,20 +659,56 @@ if('IntersectionObserver' in window){
  .forEach(id=>{if($(id))observer.observe($(id));});
 }
 
-// Add a transaction.
+// Find likely duplicates without blocking legitimate repeated transactions.
+// Matching type, amount and date is deliberately a warning, never an automatic rejection.
+function findPotentialDuplicates(candidate){
+ return transactions.filter(existing=>
+  validTransaction(existing)&&existing.type!=='correction'&&
+  existing.type===candidate.type&&
+  Number(existing.amount)===candidate.amount&&
+  existing.date===candidate.date
+ );
+}
+
+// Add a transaction with a duplicate warning and a rapid-submit guard.
+let txSubmitting=false;
 $('txForm').addEventListener('submit',e=>{
  e.preventDefault();
- const amount=Number($('amount').value),type=$('type').value,date=$('date').value;
- if(!TYPES.includes(type))return alert('Select a valid transaction type.');
- if(!Number.isSafeInteger(amount)||amount<=0)return alert('Enter a valid whole-number amount greater than zero.');
- if(!validDate(date))return alert('Select a valid transaction date.');
- if(type==='withdrawal'&&amount>totals().current)
-  return alert('This withdrawal is greater than the currently recorded value. Check your figures first.');
+ if(txSubmitting)return;
+ txSubmitting=true;
+ const submitButton=e.target.querySelector('button[type="submit"]');
+ if(submitButton)submitButton.disabled=true;
+ try{
+  const amount=Number($('amount').value),type=$('type').value,date=$('date').value;
+  if(!TYPES.includes(type))return alert('Select a valid transaction type.');
+  if(!Number.isSafeInteger(amount)||amount<=0)return alert('Enter a valid whole-number amount greater than zero.');
+  if(!validDate(date))return alert('Select a valid transaction date.');
+  if(type==='withdrawal'&&amount>totals().current)
+   return alert('This withdrawal is greater than the currently recorded value. Check your figures first.');
 
- const tx={id:makeId(),type,amount,date,note:$('note').value.trim().slice(0,100)};
- transactions.push(tx);
- log('Transaction added',`${type}: ${money(amount)} on ${date}${tx.note?' — '+tx.note:''}`);
- if(persist()){e.target.reset();$('date').value=today;}
+  const tx={id:makeId(),type,amount,date,note:$('note').value.trim().slice(0,100)};
+  const matches=findPotentialDuplicates(tx);
+  if(matches.length){
+   const examples=matches.slice(0,3).map((item,index)=>
+    `${index+1}. ${item.note||'No note/reference'}${item.reversedBy?' (previously reversed)':''}`
+   ).join('\n');
+   const more=matches.length>3?`\n…and ${matches.length-3} more matching entr${matches.length-3===1?'y':'ies'}.`:'';
+   const message=`Possible duplicate detected.\n\nThere ${matches.length===1?'is':'are'} already ${matches.length} transaction${matches.length===1?'':'s'} with the same type, amount and date:\n\n${examples}${more}\n\nNew entry: ${type} · ${money(amount)} · ${date}${tx.note?' · '+tx.note:''}\n\nIf this is a separate, genuine transaction, choose OK to add it anyway. Choose Cancel if you are unsure.`;
+   if(!confirm(message)){
+    log('Possible duplicate declined',`${type}: ${money(amount)} on ${date}; no new transaction was added.`);
+    persist();
+    return;
+   }
+   log('Possible duplicate confirmed',`${matches.length} matching existing entr${matches.length===1?'y':'ies'} reviewed; user confirmed this is a separate transaction.`);
+  }
+
+  transactions.push(tx);
+  log('Transaction added',`${type}: ${money(amount)} on ${date}${tx.note?' — '+tx.note:''}`);
+  if(persist()){e.target.reset();$('date').value=today;}
+ }finally{
+  txSubmitting=false;
+  if(submitButton)submitButton.disabled=false;
+ }
 });
 
 // Record or replace a valuation for a date.
