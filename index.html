@@ -1,5 +1,4 @@
 
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -102,7 +101,7 @@ html{scroll-behavior:auto}.progress-fill{transition:none}
 <header class="top">
 <div>
 <div class="brand">My<span>Capital</span></div>
-<div class="small">Personal investment tracker · Prototype 1.7</div>
+<div class="small">Personal investment tracker · Prototype 1.8</div>
 </div>
 <div class="tag">DEVELOPMENT MODE · NO MONEY MOVES</div>
 </header>
@@ -110,7 +109,7 @@ html{scroll-behavior:auto}.progress-fill{transition:none}
 <div class="notice">
 <strong>Important:</strong> MyCapital is a personal record-keeping prototype.
 It is not connected to a bank or investment provider and cannot move or invest money.
-Your records remain in this browser on this device. Prototype 1.7 keeps the same saved-record storage keys as Prototype 1.6, so it can continue using your existing 1.6 records. It does not automatically import Prototype 1.5 records. Browser storage is not encrypted by this prototype.
+Your records remain in this browser on this device. Prototype 1.8 keeps the same saved-record storage keys as Prototype 1.6, so it can continue using your existing 1.6 records. It does not automatically import Prototype 1.5 records. Browser storage is not encrypted by this prototype.
 Export backups regularly and keep backup text private.
 </div>
 
@@ -264,7 +263,7 @@ style="font:12px/1.45 monospace;resize:vertical"></textarea>
 </section>
 
 <div class="footer">
-MyCapital Prototype 1.7 · Local record keeping only.
+MyCapital Prototype 1.8 · Local record keeping only.
 Not a bank, wallet or investment provider.
 No investment transactions are executed by this application.
 </div>
@@ -304,7 +303,7 @@ function validDate(value){
 }
 
 
-// Prototype 1.7 preserves the 1.6 storage namespace and checks raw data before parsing.
+// Prototype 1.8 preserves the 1.6 storage namespace and checks raw data before parsing.
 // If a stored value is malformed, stop before any normal app code can overwrite it.
 const rawStartup={};
 const startupProblems=[];
@@ -316,7 +315,9 @@ const expectedTypes=[
  ['mycapital_v16_valuations','array']
 ];
 for(const [key,kind] of expectedTypes){
- const raw=localStorage.getItem(key);
+ let raw;
+ try{raw=localStorage.getItem(key);}
+ catch(storageError){startupProblems.push('Browser storage is unavailable or blocked');break;}
  rawStartup[key]=raw;
  if(raw===null)continue;
  try{
@@ -346,6 +347,28 @@ if(!startupProblems.length){
   }
   ids.add(item.id);
  }
+ // Validate both directions of every reversal link before normal startup.
+ if(!startupProblems.length){
+  const byId=new Map(tx.map(item=>[item.id,item]));
+  const reversedOriginals=new Set();
+  for(const item of tx){
+   if(item.type==='correction'){
+    const original=byId.get(item.correctionOf);
+    if(!original||original.type==='correction'||original.type!==item.reversesType||
+       Number(original.amount)!==Number(item.amount)||original.reversedBy!==item.id||
+       reversedOriginals.has(original.id)){
+     startupProblems.push('Transactions contain an inconsistent reversal link');break;
+    }
+    reversedOriginals.add(original.id);
+   }else if(item.reversedBy!==undefined){
+    const correction=byId.get(item.reversedBy);
+    if(typeof item.reversedBy!=='string'||!correction||correction.type!=='correction'||
+       correction.correctionOf!==item.id){
+     startupProblems.push('Transactions contain an invalid reversal reference');break;
+    }
+   }
+  }
+ }
  if(!startupProblems.length&&!hist.every(h=>h&&typeof h==='object'&&typeof h.action==='string'&&typeof h.details==='string'))
   startupProblems.push('Change history contains an invalid entry');
  if(!startupProblems.length&&!vals.every(v=>v&&Number.isSafeInteger(Number(v.amount))&&Number(v.amount)>=0&&validDate(v.date)))
@@ -357,14 +380,14 @@ if(!startupProblems.length){
 }
 if(startupProblems.length){
  document.body.innerHTML=`<main style="max-width:760px;margin:30px auto;padding:20px;color:#eef4ff;font:15px/1.6 system-ui;background:#0b1220;min-height:100vh">
- <h1 style="color:#ffb4b4">MyCapital 1.7 — Recovery protection active</h1>
+ <h1 style="color:#ffb4b4">MyCapital 1.8 — Recovery protection active</h1>
  <p>MyCapital found data that it cannot safely read. The app has stopped normal startup to prevent accidental overwriting. No saved values have been changed by this recovery screen.</p>
  <p><strong>Items needing attention:</strong></p><ul>${startupProblems.map(x=>'<li>'+x.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))+'</li>').join('')}</ul>
  <p>Download a raw recovery snapshot before attempting repairs. Keep it private and do not delete your original Prototype 1.5 backup.</p>
  <button id="rawExport" style="padding:12px 16px;border:0;border-radius:8px;background:#62d6a5;font-weight:bold">Download raw recovery snapshot</button>
  <p style="color:#a9b8ce;font-size:13px">This mode is read-only. It does not attempt automatic repair or migration.</p></main>`;
  document.getElementById('rawExport').addEventListener('click',()=>{
-  const payload={app:'MyCapital',prototype:'1.7',kind:'raw-local-storage-recovery',exportedAt:new Date().toISOString(),problems:startupProblems,rawStorage:rawStartup};
+  const payload={app:'MyCapital',prototype:'1.8',kind:'raw-local-storage-recovery',exportedAt:new Date().toISOString(),problems:startupProblems,rawStorage:rawStartup};
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);const a=document.createElement('a');
   a.href=url;a.download='mycapital-raw-recovery-'+new Date().toISOString().slice(0,10)+'.json';
@@ -458,7 +481,28 @@ function persist(){
   }
   alert(rollbackOK?
    'MyCapital could not save your changes. The previous saved browser records were restored where storage allowed. Export a backup and check available device storage.':
-   'MyCapital could not save your changes and could not fully roll back browser storage. Stop using this copy and preserve any available backup/recovery snapshot before continuing.');
+   'MyCapital could not save your changes and could not fully roll back browser storage. MyCapital is switching to read-only recovery mode.');
+  if(!rollbackOK){
+   document.body.innerHTML=`<main style="max-width:760px;margin:30px auto;padding:20px;color:#eef4ff;font:15px/1.6 system-ui;background:#0b1220;min-height:100vh">
+   <h1 style="color:#ffb4b4">MyCapital 1.8 — Read-only recovery mode</h1>
+   <p>A browser storage write failed and rollback could not be fully verified. Normal editing has been stopped to reduce the risk of further data changes.</p>
+   <p>Download the raw recovery snapshot and keep it private. Do not clear browser data or continue entering transactions in this copy.</p>
+   <button id="emergencyExport" style="padding:12px 16px;border:0;border-radius:8px;background:#62d6a5;font-weight:bold">Download recovery snapshot</button></main>`;
+   const recovery={app:'MyCapital',prototype:'1.8',kind:'storage-rollback-failure',exportedAt:stamp(),memorySnapshot:snapshotMemory(),rawStorage:{}};
+   for(const key of [...KEYS,CHECKPOINT_KEY]){
+    try{recovery.rawStorage[key]=localStorage.getItem(key);}
+    catch(readError){recovery.rawStorage[key]=null;}
+   }
+   document.getElementById('emergencyExport').addEventListener('click',()=>{
+    try{
+     const blob=new Blob([JSON.stringify(recovery,null,2)],{type:'application/json'});
+     const url=URL.createObjectURL(blob);const a=document.createElement('a');
+     a.href=url;a.download='mycapital-emergency-recovery-'+today+'.json';
+     document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+    }catch(exportError){alert('Automatic recovery export failed. Preserve your existing backup file and do not clear browser storage.');}
+   });
+   return false;
+  }
   transactions=read(KEY,[]);valuation=read(VALUE_KEY,null);
   history=read(HISTORY_KEY,[]);goal=read(GOAL_KEY,null);
   valuations=read(VALUATIONS_KEY,[]);
@@ -718,11 +762,13 @@ $('valueForm').addEventListener('submit',e=>{
  if(!Number.isSafeInteger(amount)||amount<0)return alert('Enter a valid whole-number valuation.');
  if(!validDate(date))return alert('Select a valid valuation date.');
  const index=valuations.findIndex(v=>v.date===date);
+ const previous=index>=0?Number(valuations[index].amount):null;
  if(index>=0)valuations[index]={amount,date};
  else valuations.push({amount,date});
  valuations.sort((a,b)=>a.date.localeCompare(b.date));
  valuation=latestValuation();
- log('Valuation updated',`${money(amount)} on ${date}`);
+ log(index>=0?'Valuation corrected':'Valuation recorded',
+  index>=0?`${date}: ${money(previous)} → ${money(amount)}`:`${money(amount)} on ${date}`);
  if(persist()){e.target.reset();$('valueDate').value=today;}
 });
 
