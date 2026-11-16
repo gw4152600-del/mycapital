@@ -100,7 +100,7 @@ html{scroll-behavior:auto}.progress-fill{transition:none}
 <header class="top">
 <div>
 <div class="brand">My<span>Capital</span></div>
-<div class="small">Personal investment tracker · Prototype 1.5</div>
+<div class="small">Personal investment tracker · Prototype 1.6</div>
 </div>
 <div class="tag">DEVELOPMENT MODE · NO MONEY MOVES</div>
 </header>
@@ -108,7 +108,7 @@ html{scroll-behavior:auto}.progress-fill{transition:none}
 <div class="notice">
 <strong>Important:</strong> MyCapital is a personal record-keeping prototype.
 It is not connected to a bank or investment provider and cannot move or invest money.
-Your records remain in this browser on this device.
+Your records remain in this browser on this device. Prototype 1.6 uses separate storage from Prototype 1.5 and does not automatically import its records. Browser storage is not encrypted by this prototype.
 Export backups regularly and keep backup text private.
 </div>
 
@@ -133,7 +133,7 @@ aria-current="location">Portfolio</button>
 <div class="card"><div class="metric-label">Net profit / loss</div>
 <div class="metric" id="profit">UGX 0</div>
 <div class="small" id="returnPct">0.00% return</div></div>
-<div class="card"><div class="metric-label">Net cash withdrawn</div>
+<div class="card"><div class="metric-label">Total withdrawals</div>
 <div class="metric" id="withdrawn">UGX 0</div></div>
 </div>
 </section>
@@ -230,6 +230,7 @@ aria-current="location">Portfolio</button>
 <div class="row">
 <button id="copyBackupBtn" type="button">Copy Backup</button>
 <button class="secondary" id="restoreTextBtn" type="button">Paste Backup into MyCapital</button>
+  <button class="secondary" id="checkpointExportBtn" type="button">Export pre-restore checkpoint</button>
 </div>
 <label for="backupText">Backup text</label>
 <textarea id="backupText" rows="7" spellcheck="false" autocapitalize="off"
@@ -260,7 +261,7 @@ style="font:12px/1.45 monospace;resize:vertical"></textarea>
 </section>
 
 <div class="footer">
-MyCapital Prototype 1.5 · Local record keeping only.
+MyCapital Prototype 1.6 · Local record keeping only.
 Not a bank, wallet or investment provider.
 No investment transactions are executed by this application.
 </div>
@@ -271,11 +272,12 @@ No investment transactions are executed by this application.
 'use strict';
 
 // These five original keys are deliberately unchanged for compatibility.
-const KEY='mycapital_v1_transactions';
-const VALUE_KEY='mycapital_v1_valuation';
-const HISTORY_KEY='mycapital_v1_history';
-const GOAL_KEY='mycapital_v1_goal';
-const VALUATIONS_KEY='mycapital_v1_valuations';
+const KEY='mycapital_v16_transactions';
+const VALUE_KEY='mycapital_v16_valuation';
+const HISTORY_KEY='mycapital_v16_history';
+const GOAL_KEY='mycapital_v16_goal';
+const VALUATIONS_KEY='mycapital_v16_valuations';
+const CHECKPOINT_KEY='mycapital_v16_pre_restore_checkpoint';
 const KEYS=[KEY,VALUE_KEY,HISTORY_KEY,GOAL_KEY,VALUATIONS_KEY];
 
 const $=id=>document.getElementById(id);
@@ -296,6 +298,76 @@ function validDate(value){
  d.getFullYear()===Number(value.slice(0,4))&&
  d.getMonth()+1===Number(value.slice(5,7))&&
  d.getDate()===Number(value.slice(8,10));
+}
+
+
+// Prototype 1.6 uses its own storage namespace and checks raw data before parsing.
+// If a stored value is malformed, stop before any normal app code can overwrite it.
+const rawStartup={};
+const startupProblems=[];
+const expectedTypes=[
+ ['mycapital_v16_transactions','array'],
+ ['mycapital_v16_valuation','nullable-object'],
+ ['mycapital_v16_history','array'],
+ ['mycapital_v16_goal','nullable-positive-number'],
+ ['mycapital_v16_valuations','array']
+];
+for(const [key,kind] of expectedTypes){
+ const raw=localStorage.getItem(key);
+ rawStartup[key]=raw;
+ if(raw===null)continue;
+ try{
+  const value=JSON.parse(raw);
+  const ok=kind==='array'?Array.isArray(value):
+   kind==='nullable-object'?(value===null||(value!==null&&typeof value==='object'&&!Array.isArray(value))):
+   kind==='nullable-positive-number'?(value===null||(Number.isSafeInteger(Number(value))&&Number(value)>0)):false;
+  if(!ok)startupProblems.push(key+' has an unexpected data structure');
+ }catch(err){startupProblems.push(key+' contains invalid JSON');}
+}
+// Validate record contents as well as top-level JSON shapes before normal startup.
+if(!startupProblems.length){
+ const parsed={};
+ for(const [key] of expectedTypes){
+  const raw=rawStartup[key];
+  parsed[key]=raw===null?null:JSON.parse(raw);
+ }
+ const tx=parsed.mycapital_v16_transactions||[];
+ const hist=parsed.mycapital_v16_history||[];
+ const vals=parsed.mycapital_v16_valuations||[];
+ const val=parsed.mycapital_v16_valuation;
+ const goalValue=parsed.mycapital_v16_goal;
+ const ids=new Set();
+ for(const item of tx){
+  if(!validTransaction(item)||ids.has(item.id)){
+   startupProblems.push('Transactions contain an invalid entry or duplicate ID');break;
+  }
+  ids.add(item.id);
+ }
+ if(!startupProblems.length&&!hist.every(h=>h&&typeof h==='object'&&typeof h.action==='string'&&typeof h.details==='string'))
+  startupProblems.push('Change history contains an invalid entry');
+ if(!startupProblems.length&&!vals.every(v=>v&&Number.isSafeInteger(Number(v.amount))&&Number(v.amount)>=0&&validDate(v.date)))
+  startupProblems.push('Valuation history contains an invalid entry');
+ if(!startupProblems.length&&val!==null&&(!val||!Number.isSafeInteger(Number(val.amount))||Number(val.amount)<0||!validDate(val.date)))
+  startupProblems.push('Current valuation contains an invalid entry');
+ if(!startupProblems.length&&goalValue!==null&&(!Number.isSafeInteger(Number(goalValue))||Number(goalValue)<=0))
+  startupProblems.push('Investment goal contains an invalid value');
+}
+if(startupProblems.length){
+ document.body.innerHTML=`<main style="max-width:760px;margin:30px auto;padding:20px;color:#eef4ff;font:15px/1.6 system-ui;background:#0b1220;min-height:100vh">
+ <h1 style="color:#ffb4b4">MyCapital 1.6 — Recovery protection active</h1>
+ <p>MyCapital found data that it cannot safely read. The app has stopped normal startup to prevent accidental overwriting. No saved values have been changed by this recovery screen.</p>
+ <p><strong>Items needing attention:</strong></p><ul>${startupProblems.map(x=>'<li>'+x.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))+'</li>').join('')}</ul>
+ <p>Download a raw recovery snapshot before attempting repairs. Keep it private and do not delete your original Prototype 1.5 backup.</p>
+ <button id="rawExport" style="padding:12px 16px;border:0;border-radius:8px;background:#62d6a5;font-weight:bold">Download raw recovery snapshot</button>
+ <p style="color:#a9b8ce;font-size:13px">This mode is read-only. It does not attempt automatic repair or migration.</p></main>`;
+ document.getElementById('rawExport').addEventListener('click',()=>{
+  const payload={app:'MyCapital',prototype:'1.6',kind:'raw-local-storage-recovery',exportedAt:new Date().toISOString(),problems:startupProblems,rawStorage:rawStartup};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  a.href=url;a.download='mycapital-raw-recovery-'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+ });
+ return;
 }
 
 function read(key,fallback){
@@ -348,7 +420,6 @@ if(goal!==null)$('goalAmount').value=goal;
 
 function log(action,details){
  history.unshift({at:stamp(),action,details});
- if(history.length>500)history=history.slice(0,500);
 }
 
 function snapshotMemory(){
@@ -358,29 +429,35 @@ function snapshotMemory(){
 // Atomic multi-key save: if one write fails, restore all previous stored values.
 function persist(){
  const old={};
+ // Complete the snapshot before writing anything. A failed snapshot must never
+ // trigger rollback against keys that were not read.
  try{
-  KEYS.forEach(k=>old[k]=localStorage.getItem(k));
-  const writes=[
-   [KEY,transactions],[VALUE_KEY,valuation],[HISTORY_KEY,history],
-   [GOAL_KEY,goal],[VALUATIONS_KEY,valuations]
-  ];
+  for(const key of KEYS)old[key]=localStorage.getItem(key);
+ }catch(snapshotError){
+  alert('MyCapital could not read its saved records, so no changes were written. Export a recovery snapshot if possible and check browser storage permissions.');
+  return false;
+ }
+ const writes=[
+  [KEY,transactions],[VALUE_KEY,valuation],[HISTORY_KEY,history],
+  [GOAL_KEY,goal],[VALUATIONS_KEY,valuations]
+ ];
+ try{
   for(const [key,value] of writes)localStorage.setItem(key,JSON.stringify(value));
   render();
   return true;
- }catch(e){
+ }catch(writeError){
+  let rollbackOK=true;
   for(const key of KEYS){
    try{
-    if(old[key]===null||old[key]===undefined)localStorage.removeItem(key);
+    if(old[key]===null)localStorage.removeItem(key);
     else localStorage.setItem(key,old[key]);
-   }catch(rollbackError){}
+   }catch(rollbackError){rollbackOK=false;}
   }
-  alert('MyCapital could not save your changes. The previous saved browser records have been retained where storage allowed. Export a backup and check available device storage.');
-  // Re-read the last saved state so the screen does not pretend the failed
-  // changes were saved.
-  transactions=read(KEY,[]);
-  valuation=read(VALUE_KEY,null);
-  history=read(HISTORY_KEY,[]);
-  goal=read(GOAL_KEY,null);
+  alert(rollbackOK?
+   'MyCapital could not save your changes. The previous saved browser records were restored where storage allowed. Export a backup and check available device storage.':
+   'MyCapital could not save your changes and could not fully roll back browser storage. Stop using this copy and preserve any available backup/recovery snapshot before continuing.');
+  transactions=read(KEY,[]);valuation=read(VALUE_KEY,null);
+  history=read(HISTORY_KEY,[]);goal=read(GOAL_KEY,null);
   valuations=read(VALUATIONS_KEY,[]);
   if(!Array.isArray(transactions))transactions=[];
   if(!Array.isArray(history))history=[];
@@ -392,10 +469,12 @@ function persist(){
 }
 
 function validTransaction(x){
- return !!x&&typeof x.id==='string'&&x.id.length>0&&
- TYPES.concat('correction').includes(x.type)&&
- Number.isSafeInteger(Number(x.amount))&&Number(x.amount)>0&&
- validDate(x.date);
+ return !!x&&typeof x==='object'&&!Array.isArray(x)&&
+  typeof x.id==='string'&&x.id.length>0&&x.id.length<=128&&
+  TYPES.concat('correction').includes(x.type)&&
+  Number.isSafeInteger(Number(x.amount))&&Number(x.amount)>0&&
+  validDate(x.date)&&
+  (x.note===undefined||typeof x.note==='string'&&x.note.length<=500);
 }
 
 // Only correctly linked reversal pairs affect the accounting calculations.
@@ -418,9 +497,9 @@ function reversalPairs(list){
  return {reversed,corrections};
 }
 
-function effectiveTotals(list){
+function effectiveTotals(list,allTransactions=list){
  const sums={deposit:0,withdrawal:0,fee:0,tax:0,gain:0,loss:0};
- const pairs=reversalPairs(list);
+ const pairs=reversalPairs(allTransactions);
 
  for(const x of list){
   if(!validTransaction(x))continue;
@@ -500,7 +579,7 @@ function renderGoal(t){
 function renderMonthly(){
  const month=$('reportMonth').value;
  const filtered=transactions.filter(x=>validTransaction(x)&&x.date.slice(0,7)===month);
- const sums=effectiveTotals(filtered);
+ const sums=effectiveTotals(filtered,transactions);
  $('monthDeposits').textContent=money(sums.deposit);
  $('monthWithdrawals').textContent=money(sums.withdrawal);
  $('monthCosts').textContent=money(sums.fee+sums.tax);
@@ -731,8 +810,19 @@ function validateBackup(data){
 
 function restoreBackup(data,source){
  validateBackup(data);
- if(!confirm(`Restore backup with ${data.transactions.length} transactions? This will replace the records currently in this browser. Export current records first if you need them.`))return false;
+ if(!confirm(`Restore backup with ${data.transactions.length} transactions? MyCapital will first create and verify a local pre-restore checkpoint. Continue?`))return false;
 
+ // A verified checkpoint is mandatory before any current record is replaced.
+ const checkpointText=JSON.stringify(makeBackup());
+ try{
+  localStorage.setItem(CHECKPOINT_KEY,checkpointText);
+  const verified=localStorage.getItem(CHECKPOINT_KEY);
+  if(verified!==checkpointText)throw new Error('Checkpoint verification failed');
+  JSON.parse(verified);
+ }catch(checkpointError){
+  alert('Restore cancelled. MyCapital could not create and verify a pre-restore checkpoint, so existing records were not replaced. Export a backup manually and check available storage.');
+  return false;
+ }
  const old=snapshotMemory();
  transactions=data.transactions.map(x=>({...x,amount:Number(x.amount)}));
  history=data.history.map(h=>({...h}));
@@ -809,6 +899,20 @@ $('importFile').addEventListener('change',async e=>{
   restoreBackup(data,file.name);
  }catch(err){alert('Could not restore backup: '+err.message);}
  finally{e.target.value='';}
+});
+
+$('checkpointExportBtn').addEventListener('click',()=>{
+ try{
+  const raw=localStorage.getItem(CHECKPOINT_KEY);
+  if(!raw)throw new Error('No pre-restore checkpoint is stored on this browser yet.');
+  const data=JSON.parse(raw);
+  validateBackup(data);
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  a.href=url;a.download='mycapital-pre-restore-checkpoint-'+today+'.json';
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+  $('backupInfo').textContent='Pre-restore checkpoint export started. Check Downloads and keep the file private.';
+ }catch(err){alert('Could not export checkpoint: '+err.message);}
 });
 
 render();
