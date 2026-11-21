@@ -8,12 +8,139 @@
 <style>
 :root{--bg:#0b1220;--panel:#121e31;--panel2:#192840;--line:#2a3a53;--text:#eef4ff;--muted:#a9b8ce;--accent:#62d6a5;--red:#ff8585;--blue:#8bb8ff;--amber:#f2c879}
 *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:100px}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}.wrap{max-width:1120px;margin:auto;padding:20px 14px 45px}.top,.section-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.top{margin-bottom:18px}.brand{font-size:26px;font-weight:850}.brand span{color:var(--accent)}.tag,.status{font-size:11px;color:var(--muted);border:1px solid var(--line);padding:5px 9px;border-radius:20px}.notice,.guidance{background:#17263a;border:1px solid #38506c;color:#d7e6fb;padding:12px 14px;border-radius:12px;margin-bottom:16px;font-size:13px}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.two{display:grid;grid-template-columns:1fr 1fr;gap:13px}.card{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:16px;min-width:0}.metric-label,.small{color:var(--muted);font-size:12px}.metric{font-size:clamp(19px,3vw,26px);font-weight:750;margin-top:7px;overflow-wrap:anywhere}.positive{color:var(--accent)}.negative,.warning{color:var(--red)}.amber{color:var(--amber)}h2{font-size:17px;margin:0 0 13px}h3{font-size:14px;margin:0 0 9px}.section{margin-top:17px;scroll-margin-top:100px}label{display:block;color:var(--muted);font-size:12px;margin:10px 0 5px}input,select,button,textarea{font:inherit}input,select,textarea{width:100%;padding:11px;background:#0c1728;color:var(--text);border:1px solid var(--line);border-radius:9px}button{border:0;border-radius:9px;padding:11px 14px;background:var(--accent);color:#082016;font-weight:750;cursor:pointer;margin-top:12px}button.secondary{background:#263a55;color:var(--text);border:1px solid var(--line)}button.danger{background:#482b35;color:#ffd9df}button:disabled{opacity:.5;cursor:not-allowed}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--blue);outline-offset:2px}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.row>*{flex:1;min-width:0}.tabs{display:flex;gap:7px;flex-wrap:wrap;position:sticky;top:0;z-index:10;padding:10px 0;background:rgba(11,18,32,.97)}.tabs button{font-size:12px;color:var(--muted);padding:8px 11px;border:1px solid var(--line);border-radius:20px;background:var(--panel);margin:0;flex:0 0 auto}.tabs button.active{background:var(--accent);color:#082016;border-color:var(--accent)}.progress{height:12px;background:#0c1728;border-radius:20px;overflow:hidden;margin:12px 0}.progress-fill{height:100%;width:0;background:var(--accent)}table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:9px 7px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--muted);font-weight:600}.empty{color:var(--muted);padding:18px 4px;text-align:center}.actions button{margin:0;padding:6px 9px;font-size:12px}.guidance{margin:12px 0 0;background:#0c1728;border-color:var(--line);border-left:3px solid var(--blue);color:var(--muted)}.footer{margin-top:22px;color:var(--muted);font-size:12px}.chart{width:100%;height:auto;display:block;min-height:160px}.chart-label{font-size:11px;fill:var(--muted)}.chart-line{fill:none;stroke:var(--blue);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.chart-dot{fill:var(--accent)}.chart-grid{stroke:var(--line);stroke-dasharray:4 5}.hidden{display:none!important}.test-pass{color:var(--accent)}.test-fail{color:var(--red)}@media(max-width:720px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:1fr}.wrap{padding:15px 11px 35px}table{font-size:12px}th,td{padding:8px 4px}.brand{font-size:23px}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+.arch-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.arch-card{background:#121e31;border:1px solid #2a3a53;border-radius:13px;padding:14px;min-width:0}
+.arch-card h3{color:#eef4ff}
+.arch-kicker{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#62d6a5;font-weight:800}
+.arch-flow{display:flex;align-items:stretch;gap:7px;flex-wrap:wrap}
+.arch-step{flex:1;min-width:125px;background:#0c1728;border:1px solid #2a3a53;border-radius:10px;padding:10px;font-size:12px}
+.arch-step strong{display:block;color:#eef4ff;margin-bottom:4px}
+.arch-table-wrap{overflow-x:auto}
+.arch-table{min-width:620px}
+.arch-status{display:inline-block;border:1px solid #806a3b;background:#302819;color:#f2c879;border-radius:20px;padding:3px 8px;font-size:10px;font-weight:800}
+.arch-pill{display:inline-block;border:1px solid #2a3a53;background:#192840;color:#a9b8ce;border-radius:20px;padding:3px 8px;font-size:10px}
+.arch-nav{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}
+.arch-nav button{margin:0;background:#192840;color:#d7e6fb;border:1px solid #2a3a53;padding:8px 10px;font-size:12px}
+.arch-nav button.active{background:#62d6a5;color:#082016;border-color:#62d6a5}
+.arch-panel[hidden]{display:none}
+@media(max-width:720px){.arch-grid{grid-template-columns:1fr}.arch-step{min-width:100%}}
+
 </style>
 </head>
 <body><div class="wrap">
-<header class="top"><div><div class="brand">My<span>Capital</span></div><div class="small">Personal investment tracker · Prototype 2.5</div></div><div class="tag">DEVELOPMENT MODE · NO MONEY MOVES</div></header>
-<div class="notice"><strong>Important:</strong> MyCapital is a local record-keeping prototype. It is not connected to a bank, mobile-money operator or investment provider and cannot move or invest money. Records are stored in this browser on this device and are not encrypted by this prototype. Export a fresh backup before upgrades or testing and keep it private. Provider valuations are user-entered snapshots, not live balances. Prototype 2.5 is the final financial-logic testing build. It preserves existing records and format-8 backup compatibility. Passing its tests is not production certification. This is not a production financial service.</div>
-<nav class="tabs" aria-label="Page sections"><button class="active" data-target="portfolioSection" type="button">Portfolio</button><button data-target="performanceSection" type="button">Performance</button><button data-target="reconcileSection" type="button">Reconciliation</button><button data-target="reportsSection" type="button">Reports</button><button data-target="goalsSection" type="button">Goals</button><button data-target="testsSection" type="button">Tests</button></nav>
+<header class="top"><div><div class="brand">My<span>Capital</span></div><div class="small">Personal investment tracker · Stage 2 architecture build</div></div><div class="tag">DEVELOPMENT MODE · NO MONEY MOVES</div></header>
+<div class="notice"><strong>Important:</strong> MyCapital is a local record-keeping prototype. It is not connected to a bank, mobile-money operator or investment provider and cannot move or invest money. Records are stored in this browser on this device and are not encrypted by this prototype. Export a fresh backup before upgrades or testing and keep it private. Provider valuations are user-entered snapshots, not live balances. Prototype 2.5 is the preserved financial-logic baseline; Stage 2 adds an architecture workspace only. It preserves existing records and format-8 backup compatibility. Passing its tests is not production certification. This is not a production financial service.</div>
+<nav class="tabs" aria-label="Page sections"><button class="active" data-target="portfolioSection" type="button">Portfolio</button><button data-target="performanceSection" type="button">Performance</button><button data-target="reconcileSection" type="button">Reconciliation</button><button data-target="reportsSection" type="button">Reports</button><button data-target="goalsSection" type="button">Goals</button><button data-target="testsSection" type="button">Tests</button><button data-target="architectureSection" type="button">System architecture</button></nav>
+
+<section id="architectureSection" class="section card">
+  <div class="section-heading">
+    <div><div class="arch-kicker">Stage 2 · Real-system architecture</div><h2 style="margin:4px 0">MyCapital system architecture</h2></div>
+    <span class="arch-status">DESIGN BUILD · NOT LIVE</span>
+  </div>
+  <div class="notice" style="margin-top:10px">
+    This workspace defines how the future platform is intended to operate. It does not create customer accounts, hold funds, connect to providers, execute transactions, or provide regulated financial services. The existing Prototype 2.5 ledger remains the only active local record set.
+  </div>
+  <div class="grid" style="grid-template-columns:repeat(3,minmax(0,1fr));margin:12px 0">
+    <div class="arch-card"><div class="metric-label">Operating model</div><strong>Partner-led</strong><div class="small">Licensed financial institutions safeguard and move funds.</div></div>
+    <div class="arch-card"><div class="metric-label">Initial account</div><strong>Founder / personal</strong><div class="small">The first product use case, kept separate from company funds.</div></div>
+    <div class="arch-card"><div class="metric-label">Future scale</div><strong>Multi-customer</strong><div class="small">Tenant-isolated customer records and permissions.</div></div>
+  </div>
+
+  <div class="arch-nav" role="tablist" aria-label="Architecture modules">
+    <button type="button" class="active" data-arch-target="archOverview">Overview</button>
+    <button type="button" data-arch-target="archAccounts">Accounts & identity</button>
+    <button type="button" data-arch-target="archLedger">Ledger</button>
+    <button type="button" data-arch-target="archMoney">Money movement</button>
+    <button type="button" data-arch-target="archSecurity">Security & controls</button>
+    <button type="button" data-arch-target="archPartners">Partners & regulation</button>
+  </div>
+
+  <div id="archOverview" class="arch-panel">
+    <h3>How the future MyCapital platform is separated</h3>
+    <div class="arch-flow">
+      <div class="arch-step"><strong>1. Customer experience</strong>Personal dashboard, customer portal, support and disclosures</div>
+      <div class="arch-step"><strong>2. Identity & access</strong>Verified identity, authentication, roles and consent</div>
+      <div class="arch-step"><strong>3. Core platform</strong>Accounts, double-entry ledger, transaction orchestration and reporting</div>
+      <div class="arch-step"><strong>4. Partner boundary</strong>Bank / mobile-money / investment provider APIs and settlement reports</div>
+      <div class="arch-step"><strong>5. Safeguarded funds</strong>Funds held by appropriately licensed partner institutions under approved arrangements</div>
+    </div>
+    <div class="arch-grid" style="margin-top:12px">
+      <div class="arch-card"><h3>Non-negotiable separation</h3><ul class="small"><li>Customer assets are not company operating cash.</li><li>Each customer has a distinct account and ledger scope.</li><li>MyCapital's fees and company revenue are recorded separately.</li><li>Partner settlement balances are reconciled to platform records.</li></ul></div>
+      <div class="arch-card"><h3>Build boundary</h3><ul class="small"><li>MyCapital manages instructions, records, controls and customer experience.</li><li>Licensed partners perform regulated custody, payment and investment functions.</li><li>Every external status must be confirmed by a trusted partner response or statement.</li><li>No balance is labelled available until its source and status are verified.</li></ul></div>
+    </div>
+  </div>
+
+  <div id="archAccounts" class="arch-panel" hidden>
+    <h3>Customer identity and account model</h3>
+    <p class="small">The future system uses separate identity, customer, account and permission records. A person can own more than one account; an account must always belong to one defined customer or legal entity.</p>
+    <div class="arch-table-wrap"><table class="arch-table"><thead><tr><th>Record</th><th>Purpose</th><th>Important fields / rules</th></tr></thead><tbody>
+      <tr><td><strong>Customer</strong></td><td>Person or legal entity using MyCapital</td><td>customer_id, customer_type, legal_name, status, created_at</td></tr>
+      <tr><td><strong>Identity verification</strong></td><td>KYC evidence and review state</td><td>verification_id, customer_id, provider, status, reviewed_at; sensitive evidence stored separately with restricted access</td></tr>
+      <tr><td><strong>User</strong></td><td>Login identity</td><td>user_id, customer_id, login_identifier, auth_status; never store plaintext passwords</td></tr>
+      <tr><td><strong>Account</strong></td><td>Customer's MyCapital account container</td><td>account_id, customer_id, currency, account_type, status; unique immutable IDs</td></tr>
+      <tr><td><strong>Mandate / consent</strong></td><td>Permission to request a partner action</td><td>consent_id, customer_id, scope, terms_version, granted_at, revoked_at</td></tr>
+      <tr><td><strong>Role assignment</strong></td><td>Limits what a user or staff member can do</td><td>principal_id, role, scope, granted_by, expiry; least privilege by default</td></tr>
+    </tbody></table></div>
+    <div class="guidance">Founder account is the first product use case. Founder access does not create ownership of customer funds or automatic permission to view every customer's private information.</div>
+  </div>
+
+  <div id="archLedger" class="arch-panel" hidden>
+    <h3>Double-entry financial ledger</h3>
+    <p class="small">The production ledger is append-only. Every posted journal must balance: total debits equal total credits. Corrections use linked reversing journals and replacement journals; posted entries are never silently edited or deleted.</p>
+    <div class="arch-table-wrap"><table class="arch-table"><thead><tr><th>Ledger layer</th><th>Example account</th><th>Purpose</th></tr></thead><tbody>
+      <tr><td>Customer liability</td><td>Customer available / pending balance</td><td>What the platform owes or must account for on behalf of the customer, subject to legal structure</td></tr>
+      <tr><td>Partner asset / settlement</td><td>Safeguarded partner settlement control</td><td>Control account reconciled against partner statements; not proof of custody by itself</td></tr>
+      <tr><td>Pending / suspense</td><td>Unmatched incoming payment</td><td>Holds uncertain items until confirmed and matched; never treated as spendable</td></tr>
+      <tr><td>Company revenue</td><td>Fee revenue receivable / earned</td><td>Separates company fees from customer balances</td></tr>
+      <tr><td>Operational expense</td><td>Provider charge / operating expense</td><td>Tracks company costs independently</td></tr>
+    </tbody></table></div>
+    <div class="arch-grid" style="margin-top:12px">
+      <div class="arch-card"><h3>Journal requirements</h3><ul class="small"><li>Unique journal and entry IDs</li><li>Currency and integer minor-unit amounts</li><li>Debit / credit direction</li><li>Source event and idempotency key</li><li>Effective time and recorded time</li><li>Actor, approval and audit references</li><li>Reversal linkage and reason</li></ul></div>
+      <div class="arch-card"><h3>Posting controls</h3><ul class="small"><li>Reject unbalanced journals</li><li>Reject duplicate idempotency keys</li><li>Never overwrite posted entries</li><li>Restrict manual journals by role and approval</li><li>Reconcile ledger control accounts daily</li><li>Retain immutable audit events</li></ul></div>
+    </div>
+    <div class="guidance">This is the target production accounting model. It is not yet connected to or migrated from the Prototype 2.5 personal tracker ledger.</div>
+  </div>
+
+  <div id="archMoney" class="arch-panel" hidden>
+    <h3>Partner-led deposit and withdrawal lifecycle</h3>
+    <div class="arch-flow">
+      <div class="arch-step"><strong>1. Initiated</strong>Customer requests an action; consent, limits and account status checked.</div>
+      <div class="arch-step"><strong>2. Submitted</strong>MyCapital sends a uniquely identified instruction to an approved partner.</div>
+      <div class="arch-step"><strong>3. Pending</strong>Await partner confirmation; do not show as settled or available.</div>
+      <div class="arch-step"><strong>4. Confirmed</strong>Verify signed / authenticated partner status and transaction reference.</div>
+      <div class="arch-step"><strong>5. Posted</strong>Post balanced ledger journal exactly once using idempotency controls.</div>
+      <div class="arch-step"><strong>6. Reconciled</strong>Match partner statement / settlement file; investigate breaks.</div>
+    </div>
+    <div class="arch-grid" style="margin-top:12px">
+      <div class="arch-card"><h3>Deposit exceptions</h3><ul class="small"><li>Unknown reference → suspense and investigation</li><li>Duplicate callback → idempotent no-op</li><li>Reversed by partner → linked reversal journal</li><li>Amount mismatch → hold and reconcile</li></ul></div>
+      <div class="arch-card"><h3>Withdrawal safeguards</h3><ul class="small"><li>Strong customer authentication</li><li>Available balance and limits check</li><li>Risk / fraud screening</li><li>Maker-checker approval where required</li><li>Partner final status before settlement claim</li></ul></div>
+    </div>
+  </div>
+
+  <div id="archSecurity" class="arch-panel" hidden>
+    <h3>Security, privacy and operational controls</h3>
+    <div class="arch-grid">
+      <div class="arch-card"><h3>Identity & sessions</h3><ul class="small"><li>Multi-factor authentication for sensitive actions</li><li>Secure password hashing and session expiry</li><li>Device and session management</li><li>Step-up authentication for withdrawals and profile changes</li></ul></div>
+      <div class="arch-card"><h3>Data protection</h3><ul class="small"><li>Encryption in transit and at rest</li><li>Field-level protection for highly sensitive data</li><li>Tenant isolation enforced server-side</li><li>Data minimization, retention and deletion policy</li></ul></div>
+      <div class="arch-card"><h3>Staff controls</h3><ul class="small"><li>Role-based and attribute-based access</li><li>Least privilege and time-limited access</li><li>Dual approval for high-risk actions</li><li>Support staff cannot initiate fund movements</li></ul></div>
+      <div class="arch-card"><h3>Resilience & monitoring</h3><ul class="small"><li>Encrypted backups and tested recovery</li><li>Immutable security and audit logs</li><li>Alerting for unusual access and transaction patterns</li><li>Incident response and customer notification process</li></ul></div>
+    </div>
+  </div>
+
+  <div id="archPartners" class="arch-panel" hidden>
+    <h3>Partners, legal readiness and launch gates</h3>
+    <div class="arch-grid">
+      <div class="arch-card"><h3>Partner responsibilities</h3><ul class="small"><li>Licensed bank / custodian safeguards funds under contract</li><li>Payment provider executes mobile-money and bank rails</li><li>Investment manager / provider executes approved investment activity</li><li>Independent audit and assurance providers test controls</li></ul></div>
+      <div class="arch-card"><h3>MyCapital responsibilities</h3><ul class="small"><li>Customer interface, consent and instruction management</li><li>Accurate ledger, reconciliation and statements</li><li>Customer support, complaints and dispute tracking</li><li>Privacy, security, operational risk and disclosures</li></ul></div>
+      <div class="arch-card"><h3>Uganda launch-readiness work</h3><ul class="small"><li>Obtain qualified legal advice on the exact business model and licensing perimeter</li><li>Confirm applicable Bank of Uganda, CMA and data-protection requirements with counsel and regulators</li><li>Agree safeguarding, settlement, dispute and audit responsibilities with licensed partners</li><li>Complete AML/CFT, KYC, consumer-protection and complaints frameworks</li></ul></div>
+      <div class="arch-card"><h3>Production gates — none assumed complete</h3><ul class="small"><li>Legal / regulatory approval confirmed</li><li>Partner due diligence and contracts signed</li><li>Security architecture independently assessed</li><li>Penetration test and disaster recovery test passed</li><li>Reconciliation and dispute operations staffed</li><li>Controlled pilot approved before general release</li></ul></div>
+    </div>
+    <div class="guidance">No licence, partner relationship, regulatory approval or production security certification is claimed by this prototype.</div>
+  </div>
+  <div class="footer">Architecture workspace · Design baseline v1 · Existing Prototype 2.5 data and backup format are unchanged.</div>
+</section>
+
 <section id="portfolioSection" class="section"><div class="section-heading"><h2>Portfolio overview</h2><span class="status">Recorded position · not live</span></div><div class="grid">
 <div class="card"><div class="metric-label">Total contributions</div><div class="metric" id="contrib">UGX 0</div></div><div class="card"><div class="metric-label">Estimated current value</div><div class="metric" id="value">UGX 0</div><div class="small" id="valueStatus">Calculated from recorded transactions.</div></div><div class="card"><div class="metric-label">Net profit / loss</div><div class="metric" id="profit">UGX 0</div><div class="small" id="returnPct">0.00% simple return</div></div><div class="card"><div class="metric-label">Total withdrawals</div><div class="metric" id="withdrawn">UGX 0</div></div></div></section>
 <section id="performanceSection" class="section card"><h2>Portfolio performance</h2><p class="small">End-of-day provider valuations recorded by you. Transactions dated after a snapshot adjust the estimate. Same-day transactions are assumed already included in the end-of-day snapshot; enter provider valuations only after the provider day has closed.</p><div id="chartArea"><div class="empty">Record provider valuations to build the chart.</div></div><div class="row"><div><div class="small">Fees</div><strong id="feesTotal">UGX 0</strong></div><div><div class="small">Taxes</div><strong id="taxTotal">UGX 0</strong></div><div><div class="small">Recorded gains / losses</div><strong id="gainsTotal">UGX 0</strong></div></div><div class="guidance" id="valuationSummary">No provider valuation recorded.</div><h3 style="margin-top:16px">Valuation correction register</h3><p class="small">When an existing valuation date is edited, the previous value and replacement are retained here. Entries are append-only.</p><div style="overflow-x:auto"><table><thead><tr><th>Recorded</th><th>Valuation date</th><th>Previous value</th><th>Replacement</th><th>Reason / note</th></tr></thead><tbody id="valuationChanges"></tbody></table></div><div id="valuationChangesEmpty" class="empty">No valuation corrections recorded.</div></section>
@@ -27,10 +154,21 @@
 <section id="testsSection" class="section card"><h2>Prototype 2.5 final financial-logic tests</h2><p class="small">Runs 24 isolated calculations and validation checks against fictional in-memory test records. It does not add, change or delete your saved transactions.</p><div class="row"><button id="runTestsBtn" type="button">Run all functional tests</button><button class="secondary" id="testExportBtn" type="button" disabled>Export test report</button></div><div id="testSummary" class="guidance">Tests have not been run.</div><div style="overflow-x:auto"><table><thead><tr><th>Test</th><th>Result</th><th>Details</th></tr></thead><tbody id="testResults"></tbody></table></div></section>
 <section class="section card"><h2>Transaction ledger</h2><div class="small">Corrections create linked reversing entries. Original entries remain visible and are never deleted. A reversal is recorded on the date it is actually entered.</div><div style="overflow-x:auto;margin-top:10px"><table><thead><tr><th>Date</th><th>Type</th><th>Note</th><th>Amount</th><th></th></tr></thead><tbody id="ledger"></tbody></table></div><div id="empty" class="empty">No transactions yet.</div></section>
 <section class="section card"><h2>Change history</h2><div style="overflow-x:auto"><table><thead><tr><th>When</th><th>Action</th><th>Details</th></tr></thead><tbody id="history"></tbody></table></div><div id="historyEmpty" class="empty">No changes recorded yet.</div></section>
-<div class="footer">MyCapital Prototype 2.5 · Local record keeping only. Not a bank, wallet, broker or investment provider. No money moves through this application.</div>
+<div class="footer">MyCapital Stage 2 architecture build · Local record keeping only. Not a bank, wallet, broker or investment provider. No money moves through this application.</div>
 </div>
 <script>
 (()=>{'use strict';
+
+// Stage 2 architecture workspace: presentation-only navigation; no customer or money records are written.
+document.querySelectorAll('[data-arch-target]').forEach(button=>{
+  button.addEventListener('click',()=>{
+    document.querySelectorAll('[data-arch-target]').forEach(b=>b.classList.toggle('active',b===button));
+    document.querySelectorAll('.arch-panel').forEach(panel=>{
+      panel.hidden=panel.id!==button.dataset.archTarget;
+    });
+  });
+});
+
 const KEY='mycapital_v16_transactions',VALUE_KEY='mycapital_v16_valuation',HISTORY_KEY='mycapital_v16_history',GOAL_KEY='mycapital_v16_goal',VALUATIONS_KEY='mycapital_v16_valuations',CHECKPOINT_KEY='mycapital_v16_pre_restore_checkpoint',RECON_KEY='mycapital_v20_reconciliations',VALUATION_CHANGES_KEY='mycapital_v22_valuation_changes';
 const KEYS=[KEY,VALUE_KEY,HISTORY_KEY,GOAL_KEY,VALUATIONS_KEY,RECON_KEY,VALUATION_CHANGES_KEY],$=id=>document.getElementById(id),TYPES=['deposit','withdrawal','fee','tax','gain','loss'],IMPACT={deposit:1,withdrawal:-1,fee:-1,tax:-1,gain:1,loss:-1},stamp=()=>new Date().toISOString(),money=n=>'UGX '+Math.round(Number(n)||0).toLocaleString('en-US');
 function localDate(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
