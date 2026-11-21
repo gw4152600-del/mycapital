@@ -430,6 +430,16 @@ $('date').value=today;$('date').max=today;$('valueDate').value=today;$('valueDat
  window.__mycapitalCoreTestHooks={backup,storageKeys:KEYS.slice()};
 })();
 
+</script>
+
+<script>
+// Stage 2.3 runs in a separate script so an unrelated Prototype 2.5 startup
+// exception cannot prevent the isolated engine from initializing.
+// Stage 2.3 has its own DOM and export helpers because the Prototype 2.5
+// application is intentionally enclosed in a separate function scope.
+const $=id=>document.getElementById(id);
+function engineDownload(data,name){const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500)}
+
 // Stage 2.3: isolated in-memory double-entry financial engine.
 // Deliberately does not use localStorage and does not touch Prototype 2.5 records.
 const engineAccounts=[
@@ -538,7 +548,7 @@ function runEngineTests(){
   check('Independent checker approval required',()=>{const j=sample();engineValidate(j);j.status='validated';engineApprove(j,'SANDBOX-CHECKER');must(j.status==='approved'&&j.approved_by==='SANDBOX-CHECKER','Independent approval missing.');enginePost(j);must(j.status==='posted','Approved journal did not post.');return 'A distinct checker approves before posting.'});
   check('Unapproved journal cannot be posted',()=>{const j=sample();engineValidate(j);j.status='validated';must(attempt(()=>enginePost(j)),'Unapproved journal posted.');return 'Posting gate requires recorded checker approval.'});
   check('Posting lifecycle reaches posted',()=>{const j=sample();engineValidate(j);j.status='validated';engineApprove(j,'SANDBOX-CHECKER');enginePost(j);must(j.status==='posted'&&j.approved_at&&j.posted_at,'Posting timestamps/status missing.');return 'Draft → validated → independently approved → posted completed.'});
-  check('Posted journal and lines are immutable',()=>{const j=sample();engineValidate(j);j.status='validated';engineApprove(j,'SANDBOX-CHECKER');enginePost(j);must(Object.isFrozen(j)&&Object.isFrozen(j.lines)&&j.lines.every(Object.isFrozen),'Posted journal or lines are not frozen.');must(attempt(()=>{j.lines[0].amount_units=999;}),'Posted line accepted mutation.');must(j.lines[0].amount_units===100,'Posted line value changed.');return 'Posted journal envelope and every line reject mutation; the original amount remains unchanged.'});
+  check('Posted journal and lines are immutable',()=>{const j=sample();engineValidate(j);j.status='validated';engineApprove(j,'SANDBOX-CHECKER');enginePost(j);must(Object.isFrozen(j)&&Object.isFrozen(j.lines)&&j.lines.every(Object.isFrozen),'Posted journal or lines are not frozen.');const originalAmount=j.lines[0].amount_units;try{j.lines[0].amount_units=999;}catch(e){}must(j.lines[0].amount_units===originalAmount,'Posted line accepted mutation.');must(j.lines[0].amount_units===100,'Posted line value changed.');return 'Posted journal envelope and every line reject mutation; the original amount remains unchanged.'});
   check('Reversal creates equal opposite entries',()=>{const j=sample();engineValidate(j);j.status='validated';engineApprove(j,'SANDBOX-CHECKER');enginePost(j);const r=engineReverse(j.journal_id,'Test reversal');must(r.lines[0].side==='credit'&&r.lines[1].side==='debit'&&r.status==='posted','Opposite reversal not posted.');return 'Reversal posts equal and opposite debit/credit lines.'});
   check('Original journal remains linked after reversal',()=>{const j=sample();engineValidate(j);j.status='validated';engineApprove(j,'SANDBOX-CHECKER');enginePost(j);const r=engineReverse(j.journal_id,'Link test');must(j.status==='posted'&&Object.isFrozen(j)&&r.reverses_journal_id===j.journal_id,'Reversal link missing.');return 'Original posted journal remains unchanged and immutable; reversing journal links back to it.'});
   check('Second reversal is blocked',()=>{const j=sample();engineValidate(j);j.status='validated';engineApprove(j,'SANDBOX-CHECKER');enginePost(j);engineReverse(j.journal_id,'Once');must(attempt(()=>engineReverse(j.journal_id,'Twice')),'Second reversal accepted.');return 'One-time reversal enforced in sandbox.'});
@@ -553,8 +563,19 @@ function runEngineTests(){
  engineLastTest={app:'MyCapital',stage:'2.3',kind:'isolated-financial-engine-test-report',checkedAt:new Date().toISOString(),passed,failed,total:results.length,results,limitations:['In-memory sandbox only; refresh clears journals.','No database, durable posting, real customer records or money movement.','Database uniqueness, atomic transactions, concurrency controls, server authorization and production audit immutability are not tested.']};
  $('engineTestRows').innerHTML=results.map(r=>`<tr><td>${engineSafeText(r.name)}</td><td class="${r.status==='PASS'?'test-pass':'test-fail'}">${r.status}</td><td>${engineSafeText(r.detail)}</td></tr>`).join('');$('engineTestSummary').textContent=failed?'ATTENTION REQUIRED — '+passed+' passed; '+failed+' failed.':'PASS — '+passed+' isolated Stage 2.3 engine tests passed. This is not production certification.';$('engineTestSummary').className='guidance '+(failed?'warning':'positive');$('engineIntegrity').textContent=failed?'ATTENTION':'PASS';$('engineTestExportBtn').disabled=false;return engineLastTest;
 }
-$('engineTestsBtn').addEventListener('click',()=>{try{runEngineTests()}catch(e){$('engineTestSummary').textContent='ENGINE TEST RUN ERROR — '+(e&&e.message?e.message:String(e));$('engineTestSummary').className='guidance warning';$('engineIntegrity').textContent='ERROR';console.error('MyCapital Stage 2.3 engine test error:',e)}});
-$('engineTestExportBtn').addEventListener('click',()=>{if(engineLastTest)download(engineLastTest,'mycapital-stage-2-3-engine-tests-'+engineToday()+'.json')});
-engineRender();
+try {
+ $('engineTestsBtn').addEventListener('click',()=>{try{runEngineTests()}catch(e){$('engineTestSummary').textContent='ENGINE TEST RUN ERROR — '+(e&&e.message?e.message:String(e));$('engineTestSummary').className='guidance warning';$('engineIntegrity').textContent='ERROR';console.error('MyCapital Stage 2.3 engine test error:',e)}});
+ $('engineTestExportBtn').addEventListener('click',()=>{if(engineLastTest)engineDownload(engineLastTest,'mycapital-stage-2-3-engine-tests-'+engineToday()+'.json')});
+ engineRender();
+} catch (e) {
+ const message='STAGE 2.3 STARTUP ERROR — '+(e&&e.message?e.message:String(e));
+ const summary=document.getElementById('engineTestSummary');
+ const integrity=document.getElementById('engineIntegrity');
+ const notice=document.getElementById('engineMessage');
+ if(summary){summary.textContent=message;summary.className='guidance warning'}
+ if(integrity)integrity.textContent='STARTUP ERROR';
+ if(notice)notice.textContent=message;
+ console.error('MyCapital Stage 2.3 startup error:',e);
+}
 
 </script></body></html>
